@@ -9,16 +9,29 @@ import (
 type HandRank int
 
 const (
-	HighCard HandRank = iota + 1
-	OnePair
-	TwoPairs
-	ThreeOfAKind
-	Straight
-	Flush
-	FullHouse
-	FourOfAKind
-	StraightFlush
-	RoyalFlush
+	HighCardRank HandRank = iota + 1
+	OnePairRank
+	TwoPairsRank
+	ThreeOfAKindRank
+	StraightRank
+	FlushRank
+	FullHouseRank
+	FourOfAKindRank
+	StraightFlushRank
+	RoyalFlushRank
+)
+
+const (
+	HighCardName      = "High Card"
+	OnePairName       = "One Pair"
+	TwoPairsName      = "Two Pair"
+	ThreeOfAKindName  = "Three of a Kind"
+	StraightName      = "Straight"
+	FlushName         = "Flush"
+	FullHouseName     = "Full House"
+	FourOfAKindName   = "Four of a Kind"
+	StraightFlushName = "Straight Flush"
+	RoyalFlushName    = "Royal Flush"
 )
 
 type Hand struct {
@@ -44,53 +57,49 @@ func (h *Hand) String() string {
 
 }
 
-func (h *Hand) getCounter() map[Rank]int {
-	return getCardRankCount(h.Cards)
-}
-
 func (h *Hand) Evaluate() {
-	count := h.getCounter()
+	count := getCardRankCount(h.Cards)
 	counterLength := len(count)
 
 	switch counterLength {
 	case 5:
 		switch {
 		case isRoyalFlush(h.Cards):
-			h.Type = "Royal Flush"
-			h.Value = RoyalFlush
+			h.Type = RoyalFlushName
+			h.Value = RoyalFlushRank
 		case isStraightFlush(h.Cards):
-			h.Type = "Straight Flush"
-			h.Value = StraightFlush
+			h.Type = StraightFlushName
+			h.Value = StraightFlushRank
 		case isFlush(h.Cards):
-			h.Type = "Flush"
-			h.Value = Flush
+			h.Type = FlushName
+			h.Value = FlushRank
 		case isStraight(h.Cards):
-			h.Type = "Straight"
-			h.Value = Straight
+			h.Type = StraightName
+			h.Value = StraightRank
 		default:
-			h.Type = "High Card"
-			h.Value = HighCard
+			h.Type = HighCardName
+			h.Value = HighCardRank
 		}
 	case 4:
-		h.Type = "One Pair"
-		h.Value = OnePair
+		h.Type = OnePairName
+		h.Value = OnePairRank
 	case 3:
 		switch {
 		case isThreeOfAKind(count):
-			h.Type = "Three of a Kind"
-			h.Value = ThreeOfAKind
-		case isTwoPair(h.Cards):
-			h.Type = "Two Pair"
-			h.Value = TwoPairs
+			h.Type = ThreeOfAKindName
+			h.Value = ThreeOfAKindRank
+		case isTwoPair(count):
+			h.Type = TwoPairsName
+			h.Value = TwoPairsRank
 		}
 	case 2:
 		switch {
 		case isFourOfAKind(count):
-			h.Type = "Four of a Kind"
-			h.Value = FourOfAKind
+			h.Type = FourOfAKindName
+			h.Value = FourOfAKindRank
 		case isFullHouse(count):
-			h.Type = "Full House"
-			h.Value = FullHouse
+			h.Type = FullHouseName
+			h.Value = FullHouseRank
 		}
 	}
 }
@@ -103,8 +112,7 @@ func isOnePair(cards []Card) bool {
 	return false
 }
 
-func isTwoPair(cards []Card) bool {
-	counter := getCardRankCount(cards)
+func isTwoPair(counter map[Rank]int) bool {
 	if len(counter) == 3 {
 		for _, c := range counter {
 			if c == 2 {
@@ -203,21 +211,21 @@ func isConsecutive(numbers []int) bool {
 }
 
 func getCardValues(cards []Card) []int {
-	var vals []int
-	for _, card := range cards {
-		vals = append(vals, card.Rank.Value)
+	cardVals := make([]int, len(cards))
+	for i, card := range cards {
+		cardVals[i] = card.Rank.Value
 	}
-	return vals
+	return cardVals
 }
 
 func getCardRankCount(cards []Card) map[Rank]int {
-	counter := make(map[Rank]int)
+	rankCount := make(map[Rank]int)
 	for _, card := range cards {
-		if _, ok := counter[card.Rank]; !ok {
-			counter[card.Rank] = 1
+		if _, ok := rankCount[card.Rank]; !ok {
+			rankCount[card.Rank] = 1
 		} else {
-			counter[card.Rank]++
+			rankCount[card.Rank]++
 		}
 	}
-	return counter
+	return rankCount
 }

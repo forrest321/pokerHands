@@ -1,21 +1,24 @@
 package pokerHands
 
-import "math/rand"
+import (
+	"math/rand"
+	"slices"
+)
 
 type Deck struct {
-	Cards          []Card
-	Discard        []Card
-	RemainingCards int
-	Shuffled       bool
+	Cards    []Card
+	Shuffled bool
 }
 
 func NewDeck() *Deck {
 	deck := &Deck{}
-	deck.RemainingCards = 52
 	deck.Shuffled = false
-	deck.Discard = make([]Card, 52)
 	deck.Cards = AllCards
 	return deck
+}
+
+func (d *Deck) RemainingCards() int {
+	return len(d.Cards)
 }
 
 func (d *Deck) Shuffle() {
@@ -28,21 +31,19 @@ func (d *Deck) Shuffle() {
 }
 
 func (d *Deck) DrawCard() Card {
-	card := d.Cards[d.RemainingCards-1]
-	d.RemainingCards--
+	card := d.Cards[len(d.Cards)-1]
+	d.Cards = slices.Delete(d.Cards, len(d.Cards)-1, len(d.Cards))
 	return card
 }
 
 func (d *Deck) Deal(burn, turn int) []Card {
-	var discard []Card
-	var cards []Card
+	cards := make([]Card, turn)
 	for i := 0; i < burn; i++ {
-		d.Discard = append(discard, d.DrawCard())
+		_ = d.DrawCard()
 	}
 	for i := 0; i < turn; i++ {
-		cards = append(cards, d.DrawCard())
+		cards[i] = d.DrawCard()
 	}
-	d.RemainingCards = d.RemainingCards - (burn + turn)
 	return cards
 }
 

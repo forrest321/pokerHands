@@ -1,3 +1,425 @@
+.
+├── card.go
+├── deck.go
+├── go.mod
+├── pokerHands.go
+├── pokerHands_test.go
+└── suit.go
+
+0 directories, 6 files
+File: card.go
+Lines: 115
+-----BEGIN card.go-----
+package pokerHands
+
+import (
+	"fmt"
+	"strings"
+)
+
+type Card struct {
+	Rank Rank
+	Suit Suit
+}
+
+func (c *Card) String() string {
+	cardRune, ok := CardRunes[strings.ToUpper(c.Rank.Initial+c.Suit.Initial)]
+	if ok {
+		return fmt.Sprintf("%s %s %c", c.Rank.Initial, c.Suit.Symbol, cardRune)
+	}
+	return c.Rank.Initial + c.Suit.Symbol
+}
+
+type Rank struct {
+	Value   int
+	Name    string
+	Initial string
+}
+
+var (
+	LowAceValue  = 1
+	TwoValue     = 2
+	ThreeValue   = 3
+	FourValue    = 4
+	FiveValue    = 5
+	SixValue     = 6
+	SevenValue   = 7
+	EightValue   = 8
+	NineValue    = 9
+	TenValue     = 10
+	JackValue    = 11
+	QueenValue   = 12
+	KingValue    = 13
+	HighAceValue = 14
+)
+
+var Ranks = []Rank{
+	{TwoValue, "Two", "2"},
+	{ThreeValue, "Three", "3"},
+	{FourValue, "Four", "4"},
+	{FiveValue, "Five", "5"},
+	{SixValue, "Six", "6"},
+	{SevenValue, "Seven", "7"},
+	{EightValue, "Eight", "8"},
+	{NineValue, "Nine", "9"},
+	{TenValue, "Ten", "10"},
+	{JackValue, "Jack", "J"},
+	{QueenValue, "Queen", "Q"},
+	{KingValue, "King", "K"},
+	{HighAceValue, "Ace", "A"},
+}
+
+var CardRunes = map[string]rune{
+	"2C":  '\U0001F0D2', // 2 of Clubs
+	"3C":  '\U0001F0D3', // 3 of Clubs
+	"4C":  '\U0001F0D4', // 4 of Clubs
+	"5C":  '\U0001F0D5', // 5 of Clubs
+	"6C":  '\U0001F0D6', // 6 of Clubs
+	"7C":  '\U0001F0D7', // 7 of Clubs
+	"8C":  '\U0001F0D8', // 8 of Clubs
+	"9C":  '\U0001F0D9', // 9 of Clubs
+	"10C": '\U0001F0DA', // 10 of Clubs
+	"JC":  '\U0001F0DB', // Jack of Clubs
+	"QC":  '\U0001F0DD', // Queen of Clubs
+	"KC":  '\U0001F0DE', // King of Clubs
+	"AC":  '\U0001F0D1', // Ace of Clubs
+	"2D":  '\U0001F0C2', // 2 of Diamonds
+	"3D":  '\U0001F0C3', // 3 of Diamonds
+	"4D":  '\U0001F0C4', // 4 of Diamonds
+	"5D":  '\U0001F0C5', // 5 of Diamonds
+	"6D":  '\U0001F0C6', // 6 of Diamonds
+	"7D":  '\U0001F0C7', // 7 of Diamonds
+	"8D":  '\U0001F0C8', // 8 of Diamonds
+	"9D":  '\U0001F0C9', // 9 of Diamonds
+	"10D": '\U0001F0CA', // 10 of Diamonds
+	"JD":  '\U0001F0CB', // Jack of Diamonds
+	"QD":  '\U0001F0CD', // Queen of Diamonds
+	"KD":  '\U0001F0CE', // King of Diamonds
+	"AD":  '\U0001F0C1', // Ace of Diamonds
+	"2H":  '\U0001F0B2', // 2 of Hearts
+	"3H":  '\U0001F0B3', // 3 of Hearts
+	"4H":  '\U0001F0B4', // 4 of Hearts
+	"5H":  '\U0001F0B5', // 5 of Hearts
+	"6H":  '\U0001F0B6', // 6 of Hearts
+	"7H":  '\U0001F0B7', // 7 of Hearts
+	"8H":  '\U0001F0B8', // 8 of Hearts
+	"9H":  '\U0001F0B9', // 9 of Hearts
+	"10H": '\U0001F0BA', // 10 of Hearts
+	"JH":  '\U0001F0BB', // Jack of Hearts
+	"QH":  '\U0001F0BD', // Queen of Hearts
+	"KH":  '\U0001F0BE', // King of Hearts
+	"AH":  '\U0001F0B1', // Ace of Hearts
+	"2S":  '\U0001F0A2', // 2 of Spades
+	"3S":  '\U0001F0A3', // 3 of Spades
+	"4S":  '\U0001F0A4', // 4 of Spades
+	"5S":  '\U0001F0A5', // 5 of Spades
+	"6S":  '\U0001F0A6', // 6 of Spades
+	"7S":  '\U0001F0A7', // 7 of Spades
+	"8S":  '\U0001F0A8', // 8 of Spades
+	"9S":  '\U0001F0A9', // 9 of Spades
+	"10S": '\U0001F0AA', // 10 of Spades
+	"JS":  '\U0001F0AB', // Jack of Spades
+	"QS":  '\U0001F0AD', // Queen of Spades
+	"KS":  '\U0001F0AE', // King of Spades
+	"AS":  '\U0001F0A1', // Ace of Spades
+	"BJ":  '\U0001F0CF', // Black Joker
+	"WJ":  '\U0001F0BF', // White Joker
+}
+
+-----END card.go-----
+
+File: deck.go
+Lines: 54
+-----BEGIN deck.go-----
+package pokerHands
+
+import "math/rand"
+
+type Deck struct {
+	Cards          []Card
+	Discard        []Card
+	RemainingCards int
+	Shuffled       bool
+}
+
+func NewDeck() *Deck {
+	deck := &Deck{}
+	deck.RemainingCards = 52
+	deck.Shuffled = false
+	deck.Discard = make([]Card, 52)
+	deck.Cards = AllCards
+	return deck
+}
+
+func (d *Deck) Shuffle() {
+	d.Shuffled = true
+	for i := 0; i < 7; i++ {
+		rand.Shuffle(len(d.Cards), func(i, j int) {
+			d.Cards[i], d.Cards[j] = d.Cards[j], d.Cards[i]
+		})
+	}
+}
+
+func (d *Deck) DrawCard() Card {
+	card := d.Cards[d.RemainingCards-1]
+	d.RemainingCards--
+	return card
+}
+
+func (d *Deck) Deal(burn, turn int) []Card {
+	var discard []Card
+	var cards []Card
+	for i := 0; i < burn; i++ {
+		d.Discard = append(discard, d.DrawCard())
+	}
+	for i := 0; i < turn; i++ {
+		cards = append(cards, d.DrawCard())
+	}
+	d.RemainingCards = d.RemainingCards - (burn + turn)
+	return cards
+}
+
+var AllCards = []Card{
+	{Ranks[0], Spades}, {Ranks[1], Spades}, {Ranks[2], Spades}, {Ranks[3], Spades}, {Ranks[4], Spades}, {Ranks[5], Spades}, {Ranks[6], Spades}, {Ranks[7], Spades}, {Ranks[8], Spades}, {Ranks[9], Spades}, {Ranks[10], Spades}, {Ranks[11], Spades}, {Ranks[12], Spades},
+	{Ranks[0], Hearts}, {Ranks[1], Hearts}, {Ranks[2], Hearts}, {Ranks[3], Hearts}, {Ranks[4], Hearts}, {Ranks[5], Hearts}, {Ranks[6], Hearts}, {Ranks[7], Hearts}, {Ranks[8], Hearts}, {Ranks[9], Hearts}, {Ranks[10], Hearts}, {Ranks[11], Hearts}, {Ranks[12], Hearts},
+	{Ranks[0], Diamonds}, {Ranks[1], Diamonds}, {Ranks[2], Diamonds}, {Ranks[3], Diamonds}, {Ranks[4], Diamonds}, {Ranks[5], Diamonds}, {Ranks[6], Diamonds}, {Ranks[7], Diamonds}, {Ranks[8], Diamonds}, {Ranks[9], Diamonds}, {Ranks[10], Diamonds}, {Ranks[11], Diamonds}, {Ranks[12], Diamonds},
+	{Ranks[0], Clubs}, {Ranks[1], Clubs}, {Ranks[2], Clubs}, {Ranks[3], Clubs}, {Ranks[4], Clubs}, {Ranks[5], Clubs}, {Ranks[6], Clubs}, {Ranks[7], Clubs}, {Ranks[8], Clubs}, {Ranks[9], Clubs}, {Ranks[10], Clubs}, {Ranks[11], Clubs}, {Ranks[12], Clubs},
+}
+
+-----END deck.go-----
+
+File: pokerHands.go
+Lines: 223
+-----BEGIN pokerHands.go-----
+package pokerHands
+
+import (
+	"slices"
+	"sort"
+	"strings"
+)
+
+type HandRank int
+
+const (
+	HighCard HandRank = iota + 1
+	OnePair
+	TwoPairs
+	ThreeOfAKind
+	Straight
+	Flush
+	FullHouse
+	FourOfAKind
+	StraightFlush
+	RoyalFlush
+)
+
+type Hand struct {
+	Cards []Card
+	Type  string
+	Value HandRank
+}
+
+func (h *Hand) String() string {
+	var builder strings.Builder
+	if h.Type == "" {
+		h.Evaluate()
+	}
+	builder.WriteString(h.Type + "\n")
+	for i, card := range h.Cards {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(card.String())
+	}
+
+	return builder.String()
+
+}
+
+func (h *Hand) getCounter() map[Rank]int {
+	return getCardRankCount(h.Cards)
+}
+
+func (h *Hand) Evaluate() {
+	count := h.getCounter()
+	counterLength := len(count)
+
+	switch counterLength {
+	case 5:
+		switch {
+		case isRoyalFlush(h.Cards):
+			h.Type = "Royal Flush"
+			h.Value = RoyalFlush
+		case isStraightFlush(h.Cards):
+			h.Type = "Straight Flush"
+			h.Value = StraightFlush
+		case isFlush(h.Cards):
+			h.Type = "Flush"
+			h.Value = Flush
+		case isStraight(h.Cards):
+			h.Type = "Straight"
+			h.Value = Straight
+		default:
+			h.Type = "High Card"
+			h.Value = HighCard
+		}
+	case 4:
+		h.Type = "One Pair"
+		h.Value = OnePair
+	case 3:
+		switch {
+		case isThreeOfAKind(count):
+			h.Type = "Three of a Kind"
+			h.Value = ThreeOfAKind
+		case isTwoPair(h.Cards):
+			h.Type = "Two Pair"
+			h.Value = TwoPairs
+		}
+	case 2:
+		switch {
+		case isFourOfAKind(count):
+			h.Type = "Four of a Kind"
+			h.Value = FourOfAKind
+		case isFullHouse(count):
+			h.Type = "Full House"
+			h.Value = FullHouse
+		}
+	}
+}
+
+func isOnePair(cards []Card) bool {
+	counter := getCardRankCount(cards)
+	if len(counter) == 4 {
+		return true
+	}
+	return false
+}
+
+func isTwoPair(cards []Card) bool {
+	counter := getCardRankCount(cards)
+	if len(counter) == 3 {
+		for _, c := range counter {
+			if c == 2 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func isThreeOfAKind(counter map[Rank]int) bool {
+	hasThreeOfAKind := false
+	if len(counter) == 3 {
+		for _, n := range counter {
+			if n == 3 {
+				hasThreeOfAKind = true
+			}
+		}
+	}
+	return hasThreeOfAKind
+}
+
+func isFourOfAKind(counter map[Rank]int) bool {
+	for _, n := range counter {
+		if n == 4 {
+			return true
+		}
+	}
+
+	return false
+}
+
+func isFullHouse(counter map[Rank]int) bool {
+	hasAPair := false
+	hasThree := false
+	for _, n := range counter {
+		if n == 2 {
+			hasAPair = true
+		}
+		if n == 3 {
+			hasThree = true
+		}
+	}
+
+	return hasAPair && hasThree
+}
+
+func isRoyalFlush(cards []Card) bool {
+	vals := getCardValues(cards)
+	if !slices.Contains(vals, HighAceValue) {
+		return false
+	}
+	return isStraightFlush(cards)
+}
+
+func isStraightFlush(cards []Card) bool {
+	return isStraight(cards) && isFlush(cards)
+}
+
+func isStraight(cards []Card) bool {
+	vals := getCardValues(cards)
+	if isConsecutive(vals) {
+		return true
+	}
+	if slices.Contains(vals, HighAceValue) {
+		for slices.Contains(vals, HighAceValue) {
+			i := slices.Index(vals, HighAceValue)
+			vals = slices.Replace(vals, i, i+1, LowAceValue)
+		}
+		return isConsecutive(vals)
+	}
+	return false
+}
+
+func isFlush(cards []Card) bool {
+	suit := cards[0].Suit
+	for _, card := range cards {
+		if card.Suit != suit {
+			return false
+		}
+	}
+	return true
+}
+
+func isConsecutive(numbers []int) bool {
+	// Sort the slice
+	sort.Ints(numbers)
+
+	// Check for consecutive values
+	for i := 1; i < len(numbers); i++ {
+		if numbers[i] != numbers[i-1]+1 {
+			return false
+		}
+	}
+	return true
+}
+
+func getCardValues(cards []Card) []int {
+	var vals []int
+	for _, card := range cards {
+		vals = append(vals, card.Rank.Value)
+	}
+	return vals
+}
+
+func getCardRankCount(cards []Card) map[Rank]int {
+	counter := make(map[Rank]int)
+	for _, card := range cards {
+		if _, ok := counter[card.Rank]; !ok {
+			counter[card.Rank] = 1
+		} else {
+			counter[card.Rank]++
+		}
+	}
+	return counter
+}
+
+-----END pokerHands.go-----
+
+File: pokerHands_test.go
+Lines: 468
+-----BEGIN pokerHands_test.go-----
 package pokerHands
 
 import (
@@ -144,18 +566,18 @@ func TestHand_Evaluate(t *testing.T) {
 		name   string
 		fields fields
 	}{
-		{name: "High Card", fields: fields{Cards: HighCardHand(), Type: "High Card", Value: HighCardRank}},
-		{name: "One Pair", fields: fields{Cards: OnePairHand(), Type: "One Pair", Value: OnePairRank}},
-		{name: "Two Pair", fields: fields{Cards: TwoPairHand(), Type: "Two Pair", Value: TwoPairsRank}},
-		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHand(), Type: "Three of a Kind", Value: ThreeOfAKindRank}},
-		{name: "Straight", fields: fields{Cards: StraightHand(), Type: "Straight", Value: StraightRank}},
-		{name: "Low Ace Straight", fields: fields{Cards: AceLowStraightHand(), Type: "Straight", Value: StraightRank}},
-		{name: "High Ace Straight", fields: fields{Cards: AceHighStraightHand(), Type: "Straight", Value: StraightRank}},
-		{name: "Flush", fields: fields{Cards: FlushHand(), Type: "Flush", Value: FlushRank}},
-		{name: "Full House", fields: fields{Cards: FullHouseHand(), Type: "Full House", Value: FullHouseRank}},
-		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHand(), Type: "Four of a Kind", Value: FourOfAKindRank}},
-		{name: "Straight Flush", fields: fields{Cards: StraightFlushHand(), Type: "Straight Flush", Value: StraightFlushRank}},
-		{name: "Royal Flush", fields: fields{Cards: RoyalFlushHand(), Type: "Royal Flush", Value: RoyalFlushRank}},
+		{name: "High Card", fields: fields{Cards: HighCardHand(), Type: "High Card", Value: HighCard}},
+		{name: "One Pair", fields: fields{Cards: OnePairHand(), Type: "One Pair", Value: OnePair}},
+		{name: "Two Pair", fields: fields{Cards: TwoPairHand(), Type: "Two Pair", Value: TwoPairs}},
+		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHand(), Type: "Three of a Kind", Value: ThreeOfAKind}},
+		{name: "Straight", fields: fields{Cards: StraightHand(), Type: "Straight", Value: Straight}},
+		{name: "Low Ace Straight", fields: fields{Cards: AceLowStraightHand(), Type: "Straight", Value: Straight}},
+		{name: "High Ace Straight", fields: fields{Cards: AceHighStraightHand(), Type: "Straight", Value: Straight}},
+		{name: "Flush", fields: fields{Cards: FlushHand(), Type: "Flush", Value: Flush}},
+		{name: "Full House", fields: fields{Cards: FullHouseHand(), Type: "Full House", Value: FullHouse}},
+		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHand(), Type: "Four of a Kind", Value: FourOfAKind}},
+		{name: "Straight Flush", fields: fields{Cards: StraightFlushHand(), Type: "Straight Flush", Value: StraightFlush}},
+		{name: "Royal Flush", fields: fields{Cards: RoyalFlushHand(), Type: "Royal Flush", Value: RoyalFlush}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -450,8 +872,7 @@ func Test_isTwoPair(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			count := getCardRankCount(tt.args.cards)
-			if got := isTwoPair(count); got != tt.want {
+			if got := isTwoPair(tt.args.cards); got != tt.want {
 				t.Errorf("isTwoPair() = %v, want %v", got, tt.want)
 			}
 		})
@@ -467,3 +888,63 @@ func BenchmarkFlow(b *testing.B) {
 		_ = hand.Evaluate
 	}
 }
+
+-----END pokerHands_test.go-----
+
+File: suit.go
+Lines: 51
+-----BEGIN suit.go-----
+package pokerHands
+
+type Suit struct {
+	SuitName SuitName
+	Initial  string
+	Symbol   string
+}
+
+func (s *Suit) String() string {
+	return string(s.Symbol)
+}
+
+func GetSuit(s SuitName) Suit {
+	switch s {
+	case SpadesName:
+		return Spades
+	case HeartsName:
+		return Hearts
+	case DiamondsName:
+		return Diamonds
+	case ClubsName:
+		return Clubs
+	default:
+		return Suit{}
+	}
+}
+
+type SuitName string
+
+const (
+	SpadesName   SuitName = "Spades"
+	HeartsName   SuitName = "Hearts"
+	DiamondsName SuitName = "Diamonds"
+	ClubsName    SuitName = "Clubs"
+)
+
+var Suits = []Suit{Spades, Hearts, Diamonds, Clubs}
+
+const (
+	SpadeSymbol   = `♤`
+	HeartSymbol   = `♡`
+	DiamondSymbol = `♢`
+	ClubSymbol    = `♧`
+)
+
+var (
+	Spades   = Suit{SpadesName, "s", SpadeSymbol}
+	Hearts   = Suit{HeartsName, "h", HeartSymbol}
+	Diamonds = Suit{DiamondsName, "d", DiamondSymbol}
+	Clubs    = Suit{ClubsName, "c", ClubSymbol}
+)
+
+-----END suit.go-----
+
