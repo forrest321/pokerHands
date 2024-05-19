@@ -230,11 +230,8 @@ func Test_isFourOfAKind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			//count := getCardRankCount(tt.args.cards)
-			//if got := isFourOfAKind(count); got != tt.want {
-			//	t.Errorf("isFourOfAKind() = %v, want %v", got, tt.want)
-			//}
-			if got := isFourOfAKind(tt.args.cards); got != tt.want {
+			count := getCardRankCount(tt.args.cards)
+			if got := isFourOfAKind(count); got != tt.want {
 				t.Errorf("isFourOfAKind() = %v, want %v", got, tt.want)
 			}
 		})
@@ -265,11 +262,8 @@ func Test_isFullHouse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			//count := getCardRankCount(tt.args.cards)
-			//if got := isFullHouse(count); got != tt.want {
-			//	t.Errorf("isFullHouse() = %v, want %v", got, tt.want)
-			//}
-			if got := isFullHouse(tt.args.cards); got != tt.want {
+			count := getCardRankCount(tt.args.cards)
+			if got := isFullHouse(count); got != tt.want {
 				t.Errorf("isFullHouse() = %v, want %v", got, tt.want)
 			}
 		})
@@ -424,11 +418,8 @@ func Test_isThreeOfAKind(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			//count := getCardRankCount(tt.args.cards)
-			//if got := isThreeOfAKind(count); got != tt.want {
-			//	t.Errorf("isThreeOfAKind() = %v, want %v", got, tt.want)
-			//}
-			if got := isThreeOfAKind(tt.args.cards); got != tt.want {
+			count := getCardRankCount(tt.args.cards)
+			if got := isThreeOfAKind(count); got != tt.want {
 				t.Errorf("isThreeOfAKind() = %v, want %v", got, tt.want)
 			}
 		})
