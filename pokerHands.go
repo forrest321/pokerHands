@@ -1,7 +1,6 @@
 package pokerHands
 
 import (
-	"slices"
 	"sort"
 	"strings"
 )
@@ -39,9 +38,7 @@ func (h *Hand) String() string {
 		}
 		builder.WriteString(card.String())
 	}
-
 	return builder.String()
-
 }
 
 func (h *Hand) Evaluate() {
@@ -80,72 +77,28 @@ func (h *Hand) Evaluate() {
 }
 
 func isOnePair(cards []Card) bool {
-	if ok, n := hasPair(cards); ok {
-		return n == 1
-	}
-	return false
+	return hasNOfAKind(cards, 2) == 1
 }
 
 func isTwoPair(cards []Card) bool {
-	if ok, n := hasPair(cards); ok {
-		return n == 2
-	}
-	return false
-}
-
-func hasPair(cards []Card) (bool, int) {
-	counter := getCardRankCount(cards)
-	hPair := false
-	pairCount := 0
-	for _, n := range counter {
-		if n == 2 {
-			hPair = true
-			pairCount++
-		}
-	}
-	return hPair, pairCount
+	return hasNOfAKind(cards, 2) == 2
 }
 
 func isThreeOfAKind(cards []Card) bool {
-	counter := getCardRankCount(cards)
-	hasThreeOfAKind := false
-	for _, n := range counter {
-		if n == 3 {
-			hasThreeOfAKind = true
-		}
-	}
-	return hasThreeOfAKind
+	return hasNOfAKind(cards, 3) > 0
 }
 
 func isFourOfAKind(cards []Card) bool {
-	counter := getCardRankCount(cards)
-	for _, n := range counter {
-		if n == 4 {
-			return true
-		}
-	}
-
-	return false
+	return hasNOfAKind(cards, 4) > 0
 }
 
 func isFullHouse(cards []Card) bool {
-	counter := getCardRankCount(cards)
-	if len(counter) == 2 {
-		for _, n := range counter {
-			if n == 2 || n == 3 {
-				return true
-			}
-		}
-	}
-	return false
+	rankCounts := getCardRankCount(cards)
+	return len(rankCounts) == 2 && (rankCounts[0] == 3 || rankCounts[1] == 3)
 }
 
 func isRoyalFlush(cards []Card) bool {
-	vals := getCardValues(cards)
-	if !slices.Contains(vals, HighAceValue) {
-		return false
-	}
-	return isStraightFlush(cards)
+	return containsHighAce(cards) && isStraightFlush(cards)
 }
 
 func isStraightFlush(cards []Card) bool {
@@ -154,23 +107,14 @@ func isStraightFlush(cards []Card) bool {
 
 func isStraight(cards []Card) bool {
 	vals := getCardValues(cards)
-	if isConsecutive(vals) {
-		return true
-	}
-	if slices.Contains(vals, LowAceValue) {
-		for slices.Contains(vals, LowAceValue) {
-			i := slices.Index(vals, LowAceValue)
-			vals = slices.Replace(vals, i, i+1, HighAceValue)
-		}
-		return isConsecutive(vals)
-	}
-	return false
+	sort.Ints(vals)
+	return isConsecutive(vals) || (containsLowAce(cards) && isConsecutive(convertAces(vals)))
 }
 
 func isFlush(cards []Card) bool {
-	suit := cards[0].Suit
+	firstSuit := cards[0].Suit
 	for _, card := range cards {
-		if card.Suit != suit {
+		if card.Suit != firstSuit {
 			return false
 		}
 	}
@@ -178,10 +122,6 @@ func isFlush(cards []Card) bool {
 }
 
 func isConsecutive(numbers []int) bool {
-	// Sort the slice
-	sort.Ints(numbers)
-
-	// Check for consecutive values
 	for i := 1; i < len(numbers); i++ {
 		if numbers[i] != numbers[i-1]+1 {
 			return false
@@ -191,21 +131,65 @@ func isConsecutive(numbers []int) bool {
 }
 
 func getCardValues(cards []Card) []int {
-	var vals []int
-	for _, card := range cards {
-		vals = append(vals, card.Rank.Value)
+	vals := make([]int, len(cards))
+	for i, card := range cards {
+		vals[i] = card.Rank.Value
 	}
 	return vals
 }
 
-func getCardRankCount(cards []Card) map[Rank]int {
-	counter := make(map[Rank]int)
+func getCardRankCount(cards []Card) []int {
+	counter := make(map[int]int)
 	for _, card := range cards {
-		if _, ok := counter[card.Rank]; !ok {
-			counter[card.Rank] = 1
-		} else {
-			counter[card.Rank]++
+		counter[card.Rank.Value]++
+	}
+	rankCounts := make([]int, 0, len(counter))
+	for _, count := range counter {
+		rankCounts = append(rankCounts, count)
+	}
+	sort.Sort(sort.Reverse(sort.IntSlice(rankCounts)))
+	return rankCounts
+}
+
+func hasNOfAKind(cards []Card, n int) int {
+	counter := make(map[int]int)
+	for _, card := range cards {
+		counter[card.Rank.Value]++
+	}
+	count := 0
+	for _, v := range counter {
+		if v == n {
+			count++
 		}
 	}
-	return counter
+	return count
+}
+
+func containsHighAce(cards []Card) bool {
+	for _, card := range cards {
+		if card.Rank.Value == HighAceValue {
+			return true
+		}
+	}
+	return false
+}
+
+func containsLowAce(cards []Card) bool {
+	for _, card := range cards {
+		if card.Rank.Value == LowAceValue {
+			return true
+		}
+	}
+	return false
+}
+
+func convertAces(vals []int) []int {
+	converted := make([]int, len(vals))
+	copy(converted, vals)
+	for i, v := range converted {
+		if v == LowAceValue {
+			converted[i] = HighAceValue
+		}
+	}
+	return converted
 }
