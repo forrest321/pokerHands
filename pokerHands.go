@@ -57,7 +57,7 @@ func (h *Hand) String() string {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
-		cs := fmt.Sprintf("%v", &card)
+		cs := fmt.Sprintf("%s", &card)
 		builder.WriteString(cs)
 	}
 	builder.WriteString("  ")
@@ -65,7 +65,7 @@ func (h *Hand) String() string {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
-		cs := fmt.Sprintf("%v", &card)
+		cs := fmt.Sprintf("%s", &card)
 		builder.WriteString(cs)
 	}
 
