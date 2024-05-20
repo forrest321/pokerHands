@@ -1,6 +1,7 @@
 package pokerHands
 
 import (
+	"fmt"
 	"slices"
 	"sort"
 	"strings"
@@ -56,14 +57,16 @@ func (h *Hand) String() string {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
-		builder.WriteString(card.String())
+		cs := fmt.Sprintf("%v", &card)
+		builder.WriteString(cs)
 	}
 	builder.WriteString("  ")
 	for i, card := range unused {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
-		builder.WriteString(card.String())
+		cs := fmt.Sprintf("%v", &card)
+		builder.WriteString(cs)
 	}
 
 	return builder.String()
