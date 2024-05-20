@@ -43,12 +43,23 @@ type Hand struct {
 }
 
 func (h *Hand) String() string {
+	var used []Card
+	copy(used, h.Used)
+	var unused []Card
+	copy(unused, h.Unused)
+
 	var builder strings.Builder
-	if h.Type == "" {
-		h.Evaluate()
-	}
+	h.Evaluate()
+
 	builder.WriteString(h.Type + "\n")
-	for i, card := range h.Cards {
+	for i, card := range used {
+		if i > 0 {
+			builder.WriteString(", ")
+		}
+		builder.WriteString(card.String())
+	}
+	builder.WriteString("  ")
+	for i, card := range unused {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
