@@ -60,20 +60,22 @@ func (h *Hand) String() string {
 func (h *Hand) Evaluate() {
 	count := getCardRankCount(h.Cards)
 	counterLength := len(count)
-
+	vals := getCardValues(h.Cards)
 	switch counterLength {
 	case 5:
+		flush := isFlush(h.Cards)
+		straight := isStraight(vals)
 		switch {
-		case isRoyalFlush(h.Cards):
+		case isRoyalFlush(vals, flush, straight):
 			h.Type = RoyalFlushName
 			h.Value = RoyalFlushRank
-		case isStraightFlush(h.Cards):
+		case flush && straight:
 			h.Type = StraightFlushName
 			h.Value = StraightFlushRank
-		case isFlush(h.Cards):
+		case flush:
 			h.Type = FlushName
 			h.Value = FlushRank
-		case isStraight(h.Cards):
+		case straight:
 			h.Type = StraightName
 			h.Value = StraightRank
 		default:
@@ -160,29 +162,23 @@ func isFullHouse(counter map[Rank]int) bool {
 	return hasAPair && hasThree
 }
 
-func isRoyalFlush(cards []Card) bool {
-	vals := getCardValues(cards)
-	if !slices.Contains(vals, HighAceValue) {
+func isRoyalFlush(cardVals []int, flush, straight bool) bool {
+	if !slices.Contains(cardVals, HighAceValue) {
 		return false
 	}
-	return isStraightFlush(cards)
+	return flush && straight
 }
 
-func isStraightFlush(cards []Card) bool {
-	return isStraight(cards) && isFlush(cards)
-}
-
-func isStraight(cards []Card) bool {
-	vals := getCardValues(cards)
-	if isConsecutive(vals) {
+func isStraight(cardVals []int) bool {
+	if isConsecutive(cardVals) {
 		return true
 	}
-	if slices.Contains(vals, HighAceValue) {
-		for slices.Contains(vals, HighAceValue) {
-			i := slices.Index(vals, HighAceValue)
-			vals = slices.Replace(vals, i, i+1, LowAceValue)
+	if slices.Contains(cardVals, HighAceValue) {
+		for slices.Contains(cardVals, HighAceValue) {
+			i := slices.Index(cardVals, HighAceValue)
+			cardVals = slices.Replace(cardVals, i, i+1, LowAceValue)
 		}
-		return isConsecutive(vals)
+		return isConsecutive(cardVals)
 	}
 	return false
 }
@@ -200,14 +196,23 @@ func isFlush(cards []Card) bool {
 func isConsecutive(numbers []int) bool {
 	// Sort the slice
 	sort.Ints(numbers)
-
-	// Check for consecutive values
-	for i := 1; i < len(numbers); i++ {
-		if numbers[i] != numbers[i-1]+1 {
-			return false
-		}
+	a := numbers[0]
+	b := numbers[len(numbers)-1]
+	//find sum of consecutive natural numbers from a to b
+	consecutiveSum := (b - a + 1) * (a + b) / 2
+	//if this matches the actual sum, they are consecutive
+	if consecutiveSum == sum(numbers) {
+		return true
 	}
-	return true
+	return false
+}
+
+func sum(numbers []int) int {
+	s := 0
+	for _, n := range numbers {
+		s += n
+	}
+	return s
 }
 
 func getCardValues(cards []Card) []int {

@@ -325,7 +325,10 @@ func Test_isRoyalFlush(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isRoyalFlush(tt.args.cards); got != tt.want {
+			vals := getCardValues(tt.args.cards)
+			flush := isFlush(tt.args.cards)
+			straight := isStraight(getCardValues(tt.args.cards))
+			if got := isRoyalFlush(vals, flush, straight); got != tt.want {
 				t.Errorf("isRoyalFlush() = %v, want %v", got, tt.want)
 			}
 		})
@@ -356,39 +359,9 @@ func Test_isStraight(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := isStraight(tt.args.cards); got != tt.want {
+			vals := getCardValues(tt.args.cards)
+			if got := isStraight(vals); got != tt.want {
 				t.Errorf("isStraight() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func Test_isStraightFlush(t *testing.T) {
-	type args struct {
-		cards []Card
-	}
-	tests := []struct {
-		name string
-		args args
-		want bool
-	}{
-		{"High Card", args{HighCardHand()}, false},
-		{"One Pair", args{OnePairHand()}, false},
-		{"Two Pair", args{TwoPairHand()}, false},
-		{"Three of a Kind", args{ThreeOfAKindHand()}, false},
-		{"Straight", args{StraightHand()}, false},
-		{"Ace Low Straight", args{AceLowStraightHand()}, false},
-		{"Ace High Straight", args{AceHighStraightHand()}, false},
-		{"Flush", args{FlushHand()}, false},
-		{"Full House", args{FullHouseHand()}, false},
-		{"Four of a Kind", args{FourOfAKindHand()}, false},
-		{"Straight Flush", args{StraightFlushHand()}, true},
-		{"Royal Flush", args{RoyalFlushHand()}, true},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := isStraightFlush(tt.args.cards); got != tt.want {
-				t.Errorf("isStraightFlush() = %v, want %v", got, tt.want)
 			}
 		})
 	}
