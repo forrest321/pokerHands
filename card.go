@@ -24,7 +24,42 @@ type Rank struct {
 	Initial string
 }
 
-var (
+func GetRank(val int) Rank {
+	var rank Rank
+	switch val {
+	case LowAceValue:
+		rank = LowAceRank
+	case TwoValue:
+		rank = TwoRank
+	case ThreeValue:
+		rank = ThreeRank
+	case FourValue:
+		rank = FourRank
+	case FiveValue:
+		rank = FiveRank
+	case SixValue:
+		rank = SixRank
+	case SevenValue:
+		rank = SevenRank
+	case EightValue:
+		rank = EightRank
+	case NineValue:
+		rank = NineRank
+	case TenValue:
+		rank = TenRank
+	case JackValue:
+		rank = JackRank
+	case QueenValue:
+		rank = QueenRank
+	case KingValue:
+		rank = KingRank
+	case HighAceValue:
+		rank = HighAceRank
+	}
+	return rank
+}
+
+const (
 	LowAceValue  = 1
 	TwoValue     = 2
 	ThreeValue   = 3
@@ -41,20 +76,37 @@ var (
 	HighAceValue = 14
 )
 
+var (
+	TwoRank     = Rank{TwoValue, "Two", "2"}
+	ThreeRank   = Rank{ThreeValue, "Three", "3"}
+	FourRank    = Rank{FourValue, "Four", "4"}
+	FiveRank    = Rank{FiveValue, "Five", "5"}
+	SixRank     = Rank{SixValue, "Six", "6"}
+	SevenRank   = Rank{SevenValue, "Seven", "7"}
+	EightRank   = Rank{EightValue, "Eight", "8"}
+	NineRank    = Rank{NineValue, "Nine", "9"}
+	TenRank     = Rank{TenValue, "Ten", "10"}
+	JackRank    = Rank{JackValue, "Jack", "J"}
+	QueenRank   = Rank{QueenValue, "Queen", "Q"}
+	KingRank    = Rank{KingValue, "King", "K"}
+	HighAceRank = Rank{HighAceValue, "Ace", "A"}
+	LowAceRank  = Rank{LowAceValue, "Ace", "A"}
+)
+
 var Ranks = []Rank{
-	{TwoValue, "Two", "2"},
-	{ThreeValue, "Three", "3"},
-	{FourValue, "Four", "4"},
-	{FiveValue, "Five", "5"},
-	{SixValue, "Six", "6"},
-	{SevenValue, "Seven", "7"},
-	{EightValue, "Eight", "8"},
-	{NineValue, "Nine", "9"},
-	{TenValue, "Ten", "10"},
-	{JackValue, "Jack", "J"},
-	{QueenValue, "Queen", "Q"},
-	{KingValue, "King", "K"},
-	{HighAceValue, "Ace", "A"},
+	TwoRank,
+	ThreeRank,
+	FourRank,
+	FiveRank,
+	SixRank,
+	SevenRank,
+	EightRank,
+	NineRank,
+	TenRank,
+	JackRank,
+	QueenRank,
+	KingRank,
+	HighAceRank,
 }
 
 var CardRunes = map[string]rune{
