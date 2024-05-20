@@ -201,7 +201,7 @@ func (h *Hand) Evaluate() {
 	ranks, vals := getRankings(cards)
 	switch len(ranks) {
 	case 5:
-		flush := isFlush(h.Cards)
+		flush := isFlush(cards)
 		straight := isStraight(vals)
 		h.Used = h.Cards
 		switch {
