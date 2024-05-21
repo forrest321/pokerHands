@@ -25,7 +25,7 @@ go mod tidy
 ```
 
 ## Use
-You can use it in a package like so:
+You can use it like so:
 ```go
 package main
 
