@@ -47,24 +47,15 @@ func (h *Hand) String() string {
 	var builder strings.Builder
 
 	builder.WriteString(h.Type + "\n")
-	for i, card := range h.Used {
+	for i := range h.Cards {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
-		cs := fmt.Sprintf("%v", &card)
-		builder.WriteString(cs)
-	}
-	builder.WriteString("  ")
-	for i, card := range h.Unused {
-		if i > 0 {
-			builder.WriteString(", ")
-		}
-		cs := fmt.Sprintf("%v", &card)
+		cs := fmt.Sprintf("%v", &h.Cards[i])
 		builder.WriteString(cs)
 	}
 
 	return builder.String()
-
 }
 
 func isOnePair(ranks map[Rank]int) (bool, Rank) {

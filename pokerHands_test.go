@@ -1,7 +1,7 @@
 package pokerHands
 
 import (
-	"reflect"
+	"slices"
 	"testing"
 )
 
@@ -996,27 +996,56 @@ func Test_findWinners(t *testing.T) {
 		args args
 		want []Hand
 	}{
-		//{"1 winner - High Card", args{[]Hand{HighCardHand(), LowerHighCardHand1()}}, []Hand{HighCardHand()}},
-		//{"1 winner - High Card", args{[]Hand{HighCardHand(), LowerHighCardHand1(), LowerHighCardHand2()}}, []Hand{HighCardHand()}},
-		{"1 winner - Lower High Card", args{[]Hand{LowerHighCardHand2(), LowerHighCardHand1()}}, []Hand{LowerHighCardHand1()}},
-		//{"1 Winner - One Pair", args{[]Hand{OnePairHand(), OnePairHigh1Hand(), OnePairHigh2Hand()}}, []Hand{OnePairHigh2Hand()}},
-		//{"1 Winner - Two Pair", args{[]Hand{TwoPairHand(), TwoPairHigh1Hand(), TwoPairHigh2Hand()}}, []Hand{TwoPairHigh2Hand()}},
-		//{"1 Winner - Three of a Kind", args{[]Hand{ThreeOfAKindHand(), ThreeOfAKindHigh1Hand(), ThreeOfAKindHigh2Hand()}}, []Hand{ThreeOfAKindHigh2Hand()}},
-		//{"1 Winner - Straight", args{[]Hand{StraightHand(), StraightHighHand()}}, []Hand{StraightHighHand()}},
-		//{"1 Winner - Flush", args{[]Hand{FlushHand(), FlushHighHand()}}, []Hand{FlushHighHand()}},
-		//{"1 Winner - Full House", args{[]Hand{FullHouseHand(), FullHouseHigh1Hand(), FullHouseHigh2Hand()}}, []Hand{FullHouseHigh2Hand()}},
-		//{"1 Winner - Four of a Kind", args{[]Hand{FourOfAKindHand(), FourOfAKindHigh1Hand(), FourOfAKindHigh2Hand()}}, []Hand{FourOfAKindHigh2Hand()}},
-		//{"1 winner - Straight Flush", args{[]Hand{StraightFlushHand(), HighStraightFlushHand()}}, []Hand{HighStraightFlushHand()}},
-		//{"1 winner - Royal Flush", args{[]Hand{HighCardHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand()}},
-		//{"2 winners - Royal Flush", args{[]Hand{RoyalFlushHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand(), RoyalFlushHand()}},
-		//{"1 winner - Royal Flush", args{[]Hand{StraightFlushHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand()}},
-		//{"1 winner - Royal Flush", args{[]Hand{StraightFlushHand(), RoyalFlushHand(), FourOfAKindHand(), FullHouseHigh2Hand(), StraightHand(), FlushHand(), ThreeOfAKindHigh1Hand(), TwoPairHigh2Hand(), OnePairHand(), HighCardHand()}}, []Hand{RoyalFlushHand()}},
+		{"1 winner - High Card", args{[]Hand{HighCardHand(), LowerHighCardHand1()}}, []Hand{HighCardHand()}},
+		{"1 winner - High Card", args{[]Hand{HighCardHand(), LowerHighCardHand1(), LowerHighCardHand2()}}, []Hand{HighCardHand()}},
+		{"1 winner - Lower High Card", args{[]Hand{LowerHighCardHand1(), LowerHighCardHand2()}}, []Hand{LowerHighCardHand1()}},
+		{"1 Winner - One Pair", args{[]Hand{OnePairHand(), OnePairHigh1Hand(), OnePairHigh2Hand()}}, []Hand{OnePairHigh2Hand()}},
+		{"1 Winner - Two Pair", args{[]Hand{TwoPairHand(), TwoPairHigh1Hand(), TwoPairHigh2Hand()}}, []Hand{TwoPairHigh2Hand()}},
+		{"1 Winner - Three of a Kind", args{[]Hand{ThreeOfAKindHand(), ThreeOfAKindHigh1Hand(), ThreeOfAKindHigh2Hand()}}, []Hand{ThreeOfAKindHigh2Hand()}},
+		{"1 Winner - Straight", args{[]Hand{StraightHand(), StraightHighHand()}}, []Hand{StraightHighHand()}},
+		{"1 Winner - Flush", args{[]Hand{FlushHand(), FlushHighHand()}}, []Hand{FlushHighHand()}},
+		{"1 Winner - Full House", args{[]Hand{FullHouseHand(), FullHouseHigh1Hand(), FullHouseHigh2Hand()}}, []Hand{FullHouseHigh2Hand()}},
+		{"1 Winner - Four of a Kind", args{[]Hand{FourOfAKindHand(), FourOfAKindHigh1Hand(), FourOfAKindHigh2Hand()}}, []Hand{FourOfAKindHigh2Hand()}},
+		{"1 winner - Straight Flush", args{[]Hand{StraightFlushHand(), HighStraightFlushHand()}}, []Hand{HighStraightFlushHand()}},
+		{"1 winner - Royal Flush", args{[]Hand{HighCardHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand()}},
+		{"2 winners - Royal Flush", args{[]Hand{RoyalFlushHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand(), RoyalFlushHand()}},
+		{"1 winner - Royal Flush", args{[]Hand{StraightFlushHand(), RoyalFlushHand()}}, []Hand{RoyalFlushHand()}},
+		{"1 winner - Royal Flush", args{[]Hand{StraightFlushHand(), RoyalFlushHand(), FourOfAKindHand(), FullHouseHigh2Hand(), StraightHand(), FlushHand(), ThreeOfAKindHigh1Hand(), TwoPairHigh2Hand(), OnePairHand(), HighCardHand()}}, []Hand{RoyalFlushHand()}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := FindWinners(tt.args.hands); !reflect.DeepEqual(got, tt.want) {
+			got := FindWinners(tt.args.hands)
+			if len(got) == len(tt.want) {
+				for i := 0; i < len(got); i++ {
+					g, w := got[i], tt.want[i]
+					if g.Type != w.Type {
+						t.Errorf("Types - findWinners() = %v, want %v", &g, &w)
+					}
+					if g.Value != w.Value {
+						t.Errorf("Values - findWinners() = %v, want %v", &g, &w)
+					}
+					if !cardSlicesAreEqual(g.Cards, w.Cards) || !cardSlicesAreEqual(g.Used, w.Used) || !cardSlicesAreEqual(g.Unused, w.Unused) {
+						t.Errorf("Slices - findWinners() = %v, want %v", &g, &w)
+					}
+				}
+			} else {
 				t.Errorf("findWinners() = %v, want %v", &got, &tt.want)
 			}
 		})
+	}
+}
+
+func cardSlicesAreEqual(s1, s2 []Card) bool {
+	if len(s1) != len(s2) {
+		return false
+	}
+	v1, v2 := getCardValues(s1), getCardValues(s2)
+	slices.Sort(v1)
+	slices.Sort(v2)
+	switch slices.Compare(v1, v2) {
+	case 0:
+		return true
+	default:
+		return false
 	}
 }
