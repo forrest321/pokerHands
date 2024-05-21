@@ -52,3 +52,12 @@ func main() {
 	}
 }
 ```
+
+## TODO:
+- [X] Fix broken tests
+- [ ] Cleanup
+- [ ] Fix exports, only export needed funcs
+- [ ] Config?
+- [ ] Add ID to hand to indicate its owner
+- [ ] Simplify Dealing / New hands
+- [ ] Fix String()s
