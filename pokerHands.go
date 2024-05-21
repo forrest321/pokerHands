@@ -44,16 +44,10 @@ type Hand struct {
 }
 
 func (h *Hand) String() string {
-	var used []Card
-	copy(used, h.Used)
-	var unused []Card
-	copy(unused, h.Unused)
-
 	var builder strings.Builder
-	h.Evaluate()
 
 	builder.WriteString(h.Type + "\n")
-	for i, card := range used {
+	for i, card := range h.Used {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
@@ -61,7 +55,7 @@ func (h *Hand) String() string {
 		builder.WriteString(cs)
 	}
 	builder.WriteString("  ")
-	for i, card := range unused {
+	for i, card := range h.Unused {
 		if i > 0 {
 			builder.WriteString(", ")
 		}
@@ -84,15 +78,19 @@ func isOnePair(ranks map[Rank]int) (bool, Rank) {
 	return false, Rank{}
 }
 
-func isTwoPair(ranks map[Rank]int) (bool, Rank) {
+func isTwoPair(ranks map[Rank]int) (bool, Rank, Rank) {
+	var r []Rank
 	if len(ranks) == 3 {
 		for k, v := range ranks {
 			if v == 2 {
-				return true, k
+				r = append(r, k)
 			}
 		}
+		if len(r) == 2 {
+			return true, r[0], r[1]
+		}
 	}
-	return false, Rank{}
+	return false, Rank{}, Rank{}
 }
 
 func isThreeOfAKind(ranks map[Rank]int) (bool, Rank) {
@@ -192,7 +190,7 @@ func getCardValues(cards []Card) []int {
 	return cardVals
 }
 
-func getRankings(cards []Card) (map[Rank]int, []int) {
+func getRankings(cards []Card) (map[Rank][]Card, map[Rank]int, []int) {
 	var cardsByRanks = make(map[Rank][]Card)
 	var ranks = make(map[Rank]int)
 	var vals []int
@@ -206,16 +204,14 @@ func getRankings(cards []Card) (map[Rank]int, []int) {
 			cardsByRanks[card.Rank] = []Card{card}
 		}
 	}
-	return ranks, vals
+	return cardsByRanks, ranks, vals
 }
 
 func (h *Hand) Evaluate() {
-	cards := make([]Card, len(h.Cards))
-	copy(cards, h.Cards)
-	ranks, vals := getRankings(cards)
+	cardsByRanks, ranks, vals := getRankings(h.Cards)
 	switch len(ranks) {
 	case 5:
-		flush := isFlush(cards)
+		flush := isFlush(h.Cards)
 		straight := isStraight(vals)
 		h.Used = h.Cards
 		switch {
@@ -235,7 +231,7 @@ func (h *Hand) Evaluate() {
 			h.Type = HighCardName
 			h.Value = HighCardRank
 			var highCard Card
-			for i, card := range cards {
+			for i, card := range h.Cards {
 				if i == 0 {
 					highCard = card
 				} else {
@@ -244,13 +240,8 @@ func (h *Hand) Evaluate() {
 					}
 				}
 			}
-			for _, card := range cards {
-				if card.Rank.Value == highCard.Rank.Value {
-					h.Used = []Card{card}
-				} else {
-					h.Unused = append(h.Unused, card)
-				}
-			}
+			h.Used = getCardsByRank(h.Cards, highCard.Rank)
+			h.Unused = getCardsByOtherRanks(cardsByRanks, highCard.Rank)
 		}
 	case 4:
 		pair, rank := isOnePair(ranks)
@@ -258,7 +249,7 @@ func (h *Hand) Evaluate() {
 			h.Type = OnePairName
 			h.Value = OnePairRank
 			h.Used = getCardsByRank(h.Cards, rank)
-			h.Unused = getCardsByOtherRank(h.Cards, rank)
+			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
 		}
 
 	case 3:
@@ -267,14 +258,16 @@ func (h *Hand) Evaluate() {
 			h.Type = ThreeOfAKindName
 			h.Value = ThreeOfAKindRank
 			h.Used = getCardsByRank(h.Cards, rank)
-			h.Unused = getCardsByOtherRank(h.Cards, rank)
+			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
 		} else {
-			two, rnk := isTwoPair(ranks)
+			two, rnk1, rnk2 := isTwoPair(ranks)
 			if two {
 				h.Type = TwoPairsName
 				h.Value = TwoPairsRank
-				h.Used = getCardsByRank(h.Cards, rnk)
-				h.Unused = getCardsByOtherRank(h.Cards, rnk)
+				a := getCardsByRank(h.Cards, rnk1)
+				b := getCardsByRank(h.Cards, rnk2)
+				h.Used = append(a, b...)
+				h.Unused = getCardsByOtherRanks(cardsByRanks, rnk1, rnk2)
 			}
 		}
 	case 2:
@@ -283,7 +276,7 @@ func (h *Hand) Evaluate() {
 			h.Type = FourOfAKindName
 			h.Value = FourOfAKindRank
 			h.Used = getCardsByRank(h.Cards, rank)
-			h.Unused = getCardsByOtherRank(h.Cards, rank)
+			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
 		} else {
 			if isFullHouse(ranks) {
 				h.Type = FullHouseName
@@ -294,11 +287,11 @@ func (h *Hand) Evaluate() {
 	}
 }
 
-func getCardsByOtherRank(cards []Card, rank Rank) []Card {
+func getCardsByOtherRanks(cardsByRanks map[Rank][]Card, ranks ...Rank) []Card {
 	returnCards := make([]Card, 0)
-	for _, card := range cards {
-		if card.Rank != rank {
-			returnCards = append(returnCards, card)
+	for rank, cards := range cardsByRanks {
+		if !slices.Contains(ranks, rank) {
+			returnCards = append(returnCards, cards...)
 		}
 	}
 	return returnCards
@@ -318,6 +311,7 @@ func FindWinners(hands []Hand) []Hand {
 	var winners []Hand
 	highestRank := 0
 	for i, h := range hands {
+		h.Evaluate()
 		if i == 0 {
 			highestRank = int(h.Value)
 			winners = append(winners, h)
@@ -358,6 +352,7 @@ func FindWinners(hands []Hand) []Hand {
 					continue
 				case 0: //equal
 					realWinners = append(realWinners, winner)
+					highKick = currentKickers
 				case 1: //currentKickers is bigger
 					highKick = currentKickers
 					realWinners = []Hand{winner}

@@ -38,6 +38,9 @@ func (d *Deck) DrawCard() Card {
 
 func (d *Deck) Deal(burn, turn int) []Card {
 	cards := make([]Card, turn)
+	if turn > d.RemainingCards() {
+		return cards
+	}
 	for i := 0; i < burn; i++ {
 		_ = d.DrawCard()
 	}
