@@ -1,21 +1,15 @@
 package pokerHands
 
-import (
-	"fmt"
-	"strings"
-)
+import "fmt"
 
 type Card struct {
 	Rank Rank
 	Suit Suit
+	Rune rune
 }
 
 func (c *Card) String() string {
-	cardRune, ok := CardRunes[strings.ToUpper(c.Rank.Initial+c.Suit.Initial)]
-	if ok {
-		return fmt.Sprintf("%s %s %c", c.Rank.Initial, c.Suit.Symbol, cardRune)
-	}
-	return c.Rank.Initial + c.Suit.Symbol
+	return fmt.Sprintf("%s %s %v", c.Rank.Name, c.Suit.Symbol, c.Rune)
 }
 
 type Cards []Card
@@ -89,59 +83,112 @@ var Ranks = []Rank{
 	HighAceRank,
 }
 
-var CardRunes = map[string]rune{
-	"2C":  '\U0001F0D2', // 2 of Clubs
-	"3C":  '\U0001F0D3', // 3 of Clubs
-	"4C":  '\U0001F0D4', // 4 of Clubs
-	"5C":  '\U0001F0D5', // 5 of Clubs
-	"6C":  '\U0001F0D6', // 6 of Clubs
-	"7C":  '\U0001F0D7', // 7 of Clubs
-	"8C":  '\U0001F0D8', // 8 of Clubs
-	"9C":  '\U0001F0D9', // 9 of Clubs
-	"10C": '\U0001F0DA', // 10 of Clubs
-	"JC":  '\U0001F0DB', // Jack of Clubs
-	"QC":  '\U0001F0DD', // Queen of Clubs
-	"KC":  '\U0001F0DE', // King of Clubs
-	"AC":  '\U0001F0D1', // Ace of Clubs
-	"2D":  '\U0001F0C2', // 2 of Diamonds
-	"3D":  '\U0001F0C3', // 3 of Diamonds
-	"4D":  '\U0001F0C4', // 4 of Diamonds
-	"5D":  '\U0001F0C5', // 5 of Diamonds
-	"6D":  '\U0001F0C6', // 6 of Diamonds
-	"7D":  '\U0001F0C7', // 7 of Diamonds
-	"8D":  '\U0001F0C8', // 8 of Diamonds
-	"9D":  '\U0001F0C9', // 9 of Diamonds
-	"10D": '\U0001F0CA', // 10 of Diamonds
-	"JD":  '\U0001F0CB', // Jack of Diamonds
-	"QD":  '\U0001F0CD', // Queen of Diamonds
-	"KD":  '\U0001F0CE', // King of Diamonds
-	"AD":  '\U0001F0C1', // Ace of Diamonds
-	"2H":  '\U0001F0B2', // 2 of Hearts
-	"3H":  '\U0001F0B3', // 3 of Hearts
-	"4H":  '\U0001F0B4', // 4 of Hearts
-	"5H":  '\U0001F0B5', // 5 of Hearts
-	"6H":  '\U0001F0B6', // 6 of Hearts
-	"7H":  '\U0001F0B7', // 7 of Hearts
-	"8H":  '\U0001F0B8', // 8 of Hearts
-	"9H":  '\U0001F0B9', // 9 of Hearts
-	"10H": '\U0001F0BA', // 10 of Hearts
-	"JH":  '\U0001F0BB', // Jack of Hearts
-	"QH":  '\U0001F0BD', // Queen of Hearts
-	"KH":  '\U0001F0BE', // King of Hearts
-	"AH":  '\U0001F0B1', // Ace of Hearts
-	"2S":  '\U0001F0A2', // 2 of Spades
-	"3S":  '\U0001F0A3', // 3 of Spades
-	"4S":  '\U0001F0A4', // 4 of Spades
-	"5S":  '\U0001F0A5', // 5 of Spades
-	"6S":  '\U0001F0A6', // 6 of Spades
-	"7S":  '\U0001F0A7', // 7 of Spades
-	"8S":  '\U0001F0A8', // 8 of Spades
-	"9S":  '\U0001F0A9', // 9 of Spades
-	"10S": '\U0001F0AA', // 10 of Spades
-	"JS":  '\U0001F0AB', // Jack of Spades
-	"QS":  '\U0001F0AD', // Queen of Spades
-	"KS":  '\U0001F0AE', // King of Spades
-	"AS":  '\U0001F0A1', // Ace of Spades
-	"BJ":  '\U0001F0CF', // Black Joker
-	"WJ":  '\U0001F0BF', // White Joker
+var (
+	TwoOfClubs      = Card{Rank: TwoRank, Suit: Clubs, Rune: '\U0001F0D2'}
+	ThreeOfClubs    = Card{Rank: ThreeRank, Suit: Clubs, Rune: '\U0001F0D3'}
+	FourOfClubs     = Card{Rank: FourRank, Suit: Clubs, Rune: '\U0001F0D4'}
+	FiveOfClubs     = Card{Rank: FiveRank, Suit: Clubs, Rune: '\U0001F0D5'}
+	SixOfClubs      = Card{Rank: SixRank, Suit: Clubs, Rune: '\U0001F0D6'}
+	SevenOfClubs    = Card{Rank: SevenRank, Suit: Clubs, Rune: '\U0001F0D7'}
+	EightOfClubs    = Card{Rank: EightRank, Suit: Clubs, Rune: '\U0001F0D8'}
+	NineOfClubs     = Card{Rank: NineRank, Suit: Clubs, Rune: '\U0001F0D9'}
+	TenOfClubs      = Card{Rank: TenRank, Suit: Clubs, Rune: '\U0001F0DA'}
+	JackOfClubs     = Card{Rank: JackRank, Suit: Clubs, Rune: '\U0001F0DB'}
+	QueenOfClubs    = Card{Rank: QueenRank, Suit: Clubs, Rune: '\U0001F0DD'}
+	KingOfClubs     = Card{Rank: KingRank, Suit: Clubs, Rune: '\U0001F0DE'}
+	AceOfClubs      = Card{Rank: HighAceRank, Suit: Clubs, Rune: '\U0001F0D1'}
+	TwoOfDiamonds   = Card{Rank: TwoRank, Suit: Diamonds, Rune: '\U0001F0C2'}
+	ThreeOfDiamonds = Card{Rank: ThreeRank, Suit: Diamonds, Rune: '\U0001F0C3'}
+	FourOfDiamonds  = Card{Rank: FourRank, Suit: Diamonds, Rune: '\U0001F0C4'}
+	FiveOfDiamonds  = Card{Rank: FiveRank, Suit: Diamonds, Rune: '\U0001F0C5'}
+	SixOfDiamonds   = Card{Rank: SixRank, Suit: Diamonds, Rune: '\U0001F0C6'}
+	SevenOfDiamonds = Card{Rank: SevenRank, Suit: Diamonds, Rune: '\U0001F0C7'}
+	EightOfDiamonds = Card{Rank: EightRank, Suit: Diamonds, Rune: '\U0001F0C8'}
+	NineOfDiamonds  = Card{Rank: NineRank, Suit: Diamonds, Rune: '\U0001F0C9'}
+	TenOfDiamonds   = Card{Rank: TenRank, Suit: Diamonds, Rune: '\U0001F0CA'}
+	JackOfDiamonds  = Card{Rank: JackRank, Suit: Diamonds, Rune: '\U0001F0CB'}
+	QueenOfDiamonds = Card{Rank: QueenRank, Suit: Diamonds, Rune: '\U0001F0CD'}
+	KingOfDiamonds  = Card{Rank: KingRank, Suit: Diamonds, Rune: '\U0001F0CE'}
+	AceOfDiamonds   = Card{Rank: HighAceRank, Suit: Diamonds, Rune: '\U0001F0C1'}
+	TwoOfHearts     = Card{Rank: TwoRank, Suit: Hearts, Rune: '\U0001F0B2'}
+	ThreeOfHearts   = Card{Rank: ThreeRank, Suit: Hearts, Rune: '\U0001F0B3'}
+	FourOfHearts    = Card{Rank: FourRank, Suit: Hearts, Rune: '\U0001F0B4'}
+	FiveOfHearts    = Card{Rank: FiveRank, Suit: Hearts, Rune: '\U0001F0B5'}
+	SixOfHearts     = Card{Rank: SixRank, Suit: Hearts, Rune: '\U0001F0B6'}
+	SevenOfHearts   = Card{Rank: SevenRank, Suit: Hearts, Rune: '\U0001F0B7'}
+	EightOfHearts   = Card{Rank: EightRank, Suit: Hearts, Rune: '\U0001F0B8'}
+	NineOfHearts    = Card{Rank: NineRank, Suit: Hearts, Rune: '\U0001F0B9'}
+	TenOfHearts     = Card{Rank: TenRank, Suit: Hearts, Rune: '\U0001F0BA'}
+	JackOfHearts    = Card{Rank: JackRank, Suit: Hearts, Rune: '\U0001F0BB'}
+	QueenOfHearts   = Card{Rank: QueenRank, Suit: Hearts, Rune: '\U0001F0BD'}
+	KingOfHearts    = Card{Rank: KingRank, Suit: Hearts, Rune: '\U0001F0BE'}
+	AceOfHearts     = Card{Rank: HighAceRank, Suit: Hearts, Rune: '\U0001F0B1'}
+	TwoOfSpades     = Card{Rank: TwoRank, Suit: Spades, Rune: '\U0001F0A2'}
+	ThreeOfSpades   = Card{Rank: ThreeRank, Suit: Spades, Rune: '\U0001F0A3'}
+	FourOfSpades    = Card{Rank: FourRank, Suit: Spades, Rune: '\U0001F0A4'}
+	FiveOfSpades    = Card{Rank: FiveRank, Suit: Spades, Rune: '\U0001F0A5'}
+	SixOfSpades     = Card{Rank: SixRank, Suit: Spades, Rune: '\U0001F0A6'}
+	SevenOfSpades   = Card{Rank: SevenRank, Suit: Spades, Rune: '\U0001F0A7'}
+	EightOfSpades   = Card{Rank: EightRank, Suit: Spades, Rune: '\U0001F0A8'}
+	NineOfSpades    = Card{Rank: NineRank, Suit: Spades, Rune: '\U0001F0A9'}
+	TenOfSpades     = Card{Rank: TenRank, Suit: Spades, Rune: '\U0001F0AA'}
+	JackOfSpades    = Card{Rank: JackRank, Suit: Spades, Rune: '\U0001F0AB'}
+	QueenOfSpades   = Card{Rank: QueenRank, Suit: Spades, Rune: '\U0001F0AD'}
+	KingOfSpades    = Card{Rank: KingRank, Suit: Spades, Rune: '\U0001F0AE'}
+	AceOfSpades     = Card{Rank: HighAceRank, Suit: Spades, Rune: '\U0001F0A1'}
+)
+
+var AllCards Cards = Cards{
+	TwoOfClubs,
+	ThreeOfClubs,
+	FourOfClubs,
+	FiveOfClubs,
+	SixOfClubs,
+	SevenOfClubs,
+	EightOfClubs,
+	NineOfClubs,
+	TenOfClubs,
+	JackOfClubs,
+	QueenOfClubs,
+	KingOfClubs,
+	AceOfClubs,
+	TwoOfDiamonds,
+	ThreeOfDiamonds,
+	FourOfDiamonds,
+	FiveOfDiamonds,
+	SixOfDiamonds,
+	SevenOfDiamonds,
+	EightOfDiamonds,
+	NineOfDiamonds,
+	TenOfDiamonds,
+	JackOfDiamonds,
+	QueenOfDiamonds,
+	KingOfDiamonds,
+	AceOfDiamonds,
+	TwoOfHearts,
+	ThreeOfHearts,
+	FourOfHearts,
+	FiveOfHearts,
+	SixOfHearts,
+	SevenOfHearts,
+	EightOfHearts,
+	NineOfHearts,
+	TenOfHearts,
+	JackOfHearts,
+	QueenOfHearts,
+	KingOfHearts,
+	AceOfHearts,
+	TwoOfSpades,
+	ThreeOfSpades,
+	FourOfSpades,
+	FiveOfSpades,
+	SixOfSpades,
+	SevenOfSpades,
+	EightOfSpades,
+	NineOfSpades,
+	TenOfSpades,
+	JackOfSpades,
+	QueenOfSpades,
+	KingOfSpades,
+	AceOfSpades,
 }

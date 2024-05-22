@@ -13,7 +13,10 @@ type Deck struct {
 func NewDeck() *Deck {
 	deck := &Deck{}
 	deck.Shuffled = false
-	deck.Cards = AllCards
+	deck.Cards = make([]Card, 52)
+	for i, card := range AllCards {
+		deck.Cards[i] = card
+	}
 	return deck
 }
 
@@ -31,8 +34,11 @@ func (d *Deck) Shuffle() {
 }
 
 func (d *Deck) DrawCard() Card {
-	card := d.Cards[len(d.Cards)-1]
-	d.Cards = slices.Delete(d.Cards, len(d.Cards)-1, len(d.Cards))
+	if d.RemainingCards() == 0 {
+		return Card{}
+	}
+	card := d.Cards[0]
+	d.Cards = slices.Delete(d.Cards, 0, 1)
 	return card
 }
 
@@ -48,11 +54,4 @@ func (d *Deck) Deal(burn, turn int) []Card {
 		cards[i] = d.DrawCard()
 	}
 	return cards
-}
-
-var AllCards = []Card{
-	{Ranks[0], Spades}, {Ranks[1], Spades}, {Ranks[2], Spades}, {Ranks[3], Spades}, {Ranks[4], Spades}, {Ranks[5], Spades}, {Ranks[6], Spades}, {Ranks[7], Spades}, {Ranks[8], Spades}, {Ranks[9], Spades}, {Ranks[10], Spades}, {Ranks[11], Spades}, {Ranks[12], Spades},
-	{Ranks[0], Hearts}, {Ranks[1], Hearts}, {Ranks[2], Hearts}, {Ranks[3], Hearts}, {Ranks[4], Hearts}, {Ranks[5], Hearts}, {Ranks[6], Hearts}, {Ranks[7], Hearts}, {Ranks[8], Hearts}, {Ranks[9], Hearts}, {Ranks[10], Hearts}, {Ranks[11], Hearts}, {Ranks[12], Hearts},
-	{Ranks[0], Diamonds}, {Ranks[1], Diamonds}, {Ranks[2], Diamonds}, {Ranks[3], Diamonds}, {Ranks[4], Diamonds}, {Ranks[5], Diamonds}, {Ranks[6], Diamonds}, {Ranks[7], Diamonds}, {Ranks[8], Diamonds}, {Ranks[9], Diamonds}, {Ranks[10], Diamonds}, {Ranks[11], Diamonds}, {Ranks[12], Diamonds},
-	{Ranks[0], Clubs}, {Ranks[1], Clubs}, {Ranks[2], Clubs}, {Ranks[3], Clubs}, {Ranks[4], Clubs}, {Ranks[5], Clubs}, {Ranks[6], Clubs}, {Ranks[7], Clubs}, {Ranks[8], Clubs}, {Ranks[9], Clubs}, {Ranks[10], Clubs}, {Ranks[11], Clubs}, {Ranks[12], Clubs},
 }
