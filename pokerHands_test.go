@@ -14,9 +14,8 @@ func HighCardHand() Hand {
 			{Rank: SixRank, Suit: Diamonds}, // 6 of Diamonds
 			{Rank: EightRank, Suit: Clubs},  // 8 of Clubs
 		},
-		Type:  HighCardName,
-		Value: HighCardRank,
-		Used:  []Card{{Rank: JackRank, Suit: Spades}},
+		Type: HighCard,
+		Used: []Card{{Rank: JackRank, Suit: Spades}},
 		Unused: []Card{
 			{Rank: TwoRank, Suit: Spades},   // 2 of Spades
 			{Rank: FourRank, Suit: Hearts},  // 4 of Hearts
@@ -28,8 +27,7 @@ func HighCardHand() Hand {
 func LowerHighCardHand1() Hand {
 	return Hand{
 		Cards: HighCardLower1Cards(),
-		Type:  HighCardName,
-		Value: HighCardRank,
+		Type:  HighCard,
 		Used:  []Card{{Rank: NineRank, Suit: Spades}}, // 9 of Spades
 		Unused: []Card{
 			{Rank: TwoRank, Suit: Spades},   // 2 of Spades
@@ -42,8 +40,7 @@ func LowerHighCardHand1() Hand {
 func LowerHighCardHand2() Hand {
 	return Hand{
 		Cards: HighCardLower2Cards(),
-		Type:  HighCardName,
-		Value: HighCardRank,
+		Type:  HighCard,
 		Used:  []Card{{Rank: NineRank, Suit: Spades}}, // 9 of Spades
 		Unused: []Card{
 			{Rank: TwoRank, Suit: Spades},    // 2 of Spades
@@ -86,8 +83,7 @@ func HighCardLower2Cards() []Card {
 func OnePairHand() Hand {
 	return Hand{
 		Cards: OnePairCards(),
-		Type:  OnePairName,
-		Value: OnePairRank,
+		Type:  OnePair,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades}, // 4 of Spades
 			{Rank: FourRank, Suit: Hearts}, // 4 of Hearts
@@ -102,8 +98,7 @@ func OnePairHand() Hand {
 func OnePairHigh1Hand() Hand {
 	return Hand{
 		Cards: OnePairHigh1Cards(),
-		Type:  OnePairName,
-		Value: OnePairRank,
+		Type:  OnePair,
 		Used: []Card{
 			{Rank: FiveRank, Suit: Spades}, // 5 of Spades
 			{Rank: FiveRank, Suit: Hearts}, // 5 of Hearts
@@ -118,8 +113,7 @@ func OnePairHigh1Hand() Hand {
 func OnePairHigh2Hand() Hand {
 	return Hand{
 		Cards: OnePairHigh2Cards(),
-		Type:  OnePairName,
-		Value: OnePairRank,
+		Type:  OnePair,
 		Used: []Card{
 			{Rank: FiveRank, Suit: Spades}, // 5 of Spades
 			{Rank: FiveRank, Suit: Hearts}, // 5 of Hearts
@@ -168,8 +162,7 @@ func OnePairHigh2Cards() []Card {
 func TwoPairHand() Hand {
 	return Hand{
 		Cards: TwoPairCards(),
-		Type:  TwoPairsName,
-		Value: TwoPairsRank,
+		Type:  TwoPairs,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},    // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},    // 4 of Hearts
@@ -184,8 +177,7 @@ func TwoPairHand() Hand {
 func TwoPairHigh1Hand() Hand {
 	return Hand{
 		Cards: TwoPairHigh1Cards(),
-		Type:  TwoPairsName,
-		Value: TwoPairsRank,
+		Type:  TwoPairs,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},    // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},    // 4 of Hearts
@@ -200,8 +192,7 @@ func TwoPairHigh1Hand() Hand {
 func TwoPairHigh2Hand() Hand {
 	return Hand{
 		Cards: TwoPairHigh2Cards(),
-		Type:  TwoPairsName,
-		Value: TwoPairsRank,
+		Type:  TwoPairs,
 		Used: []Card{
 			{Rank: FiveRank, Suit: Spades},    // 5 of Spades
 			{Rank: FiveRank, Suit: Hearts},    // 5 of Hearts
@@ -250,8 +241,7 @@ func TwoPairHigh2Cards() []Card {
 func ThreeOfAKindHand() Hand {
 	return Hand{
 		Cards: ThreeOfAKindCards(),
-		Type:  ThreeOfAKindName,
-		Value: ThreeOfAKindRank,
+		Type:  ThreeOfAKind,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},   // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},   // 4 of Hearts
@@ -266,8 +256,7 @@ func ThreeOfAKindHand() Hand {
 func ThreeOfAKindHigh1Hand() Hand {
 	return Hand{
 		Cards: ThreeOfAKindHigh1Cards(),
-		Type:  ThreeOfAKindName,
-		Value: ThreeOfAKindRank,
+		Type:  ThreeOfAKind,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},   // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},   // 4 of Hearts
@@ -282,8 +271,7 @@ func ThreeOfAKindHigh1Hand() Hand {
 func ThreeOfAKindHigh2Hand() Hand {
 	return Hand{
 		Cards: ThreeOfAKindHigh2Cards(),
-		Type:  ThreeOfAKindName,
-		Value: ThreeOfAKindRank,
+		Type:  ThreeOfAKind,
 		Used: []Card{
 			{Rank: FiveRank, Suit: Spades},   // 5 of Spades
 			{Rank: FiveRank, Suit: Hearts},   // 5 of Hearts
@@ -332,8 +320,7 @@ func ThreeOfAKindHigh2Cards() []Card {
 func StraightHand() Hand {
 	return Hand{
 		Cards:  StraightCards(),
-		Type:   StraightName,
-		Value:  StraightRank,
+		Type:   Straight,
 		Used:   StraightCards(),
 		Unused: []Card{},
 	}
@@ -341,8 +328,7 @@ func StraightHand() Hand {
 func StraightHighHand() Hand {
 	return Hand{
 		Cards:  StraightHighCards(),
-		Type:   StraightName,
-		Value:  StraightRank,
+		Type:   Straight,
 		Used:   StraightHighCards(),
 		Unused: []Card{},
 	}
@@ -350,8 +336,7 @@ func StraightHighHand() Hand {
 func AceLowStraightHand() Hand {
 	return Hand{
 		Cards:  AceLowStraightCards(),
-		Type:   StraightName,
-		Value:  StraightRank,
+		Type:   Straight,
 		Used:   AceLowStraightCards(),
 		Unused: []Card{},
 	}
@@ -359,8 +344,7 @@ func AceLowStraightHand() Hand {
 func AceHighStraightHand() Hand {
 	return Hand{
 		Cards:  AceHighStraightCards(),
-		Type:   StraightName,
-		Value:  StraightRank,
+		Type:   Straight,
 		Used:   AceHighStraightCards(),
 		Unused: []Card{},
 	}
@@ -409,8 +393,7 @@ func AceHighStraightCards() []Card {
 func FlushHand() Hand {
 	return Hand{
 		Cards:  FlushCards(),
-		Type:   FlushName,
-		Value:  FlushRank,
+		Type:   Flush,
 		Used:   FlushCards(),
 		Unused: []Card{},
 	}
@@ -418,8 +401,7 @@ func FlushHand() Hand {
 func FlushHighHand() Hand {
 	return Hand{
 		Cards:  FlushHighCards(),
-		Type:   FlushName,
-		Value:  FlushRank,
+		Type:   Flush,
 		Used:   FlushHighCards(),
 		Unused: []Card{},
 	}
@@ -450,8 +432,7 @@ func FlushHighCards() []Card {
 func FullHouseHand() Hand {
 	return Hand{
 		Cards:  FullHouseCards(),
-		Type:   FullHouseName,
-		Value:  FullHouseRank,
+		Type:   FullHouse,
 		Used:   FullHouseCards(),
 		Unused: []Card{},
 	}
@@ -459,8 +440,7 @@ func FullHouseHand() Hand {
 func FullHouseHigh1Hand() Hand {
 	return Hand{
 		Cards:  FullHouseHigh1Cards(),
-		Type:   FullHouseName,
-		Value:  FullHouseRank,
+		Type:   FullHouse,
 		Used:   FullHouseHigh1Cards(),
 		Unused: []Card{},
 	}
@@ -468,8 +448,7 @@ func FullHouseHigh1Hand() Hand {
 func FullHouseHigh2Hand() Hand {
 	return Hand{
 		Cards:  FullHouseHigh2Cards(),
-		Type:   FullHouseName,
-		Value:  FullHouseRank,
+		Type:   FullHouse,
 		Used:   FullHouseHigh2Cards(),
 		Unused: []Card{},
 	}
@@ -511,8 +490,7 @@ func FullHouseHigh2Cards() []Card {
 func FourOfAKindHand() Hand {
 	return Hand{
 		Cards: FourOfAKindCards(),
-		Type:  FourOfAKindName,
-		Value: FourOfAKindRank,
+		Type:  FourOfAKind,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},   // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},   // 4 of Hearts
@@ -527,8 +505,7 @@ func FourOfAKindHand() Hand {
 func FourOfAKindHigh1Hand() Hand {
 	return Hand{
 		Cards: FourOfAKindHigh1Cards(),
-		Type:  FourOfAKindName,
-		Value: FourOfAKindRank,
+		Type:  FourOfAKind,
 		Used: []Card{
 			{Rank: FourRank, Suit: Spades},   // 4 of Spades
 			{Rank: FourRank, Suit: Hearts},   // 4 of Hearts
@@ -543,8 +520,7 @@ func FourOfAKindHigh1Hand() Hand {
 func FourOfAKindHigh2Hand() Hand {
 	return Hand{
 		Cards: FourOfAKindHigh2Cards(),
-		Type:  FourOfAKindName,
-		Value: FourOfAKindRank,
+		Type:  FourOfAKind,
 		Used: []Card{
 			{Rank: FiveRank, Suit: Spades},   // 5 of Spades
 			{Rank: FiveRank, Suit: Hearts},   // 5 of Hearts
@@ -593,8 +569,7 @@ func FourOfAKindHigh2Cards() []Card {
 func StraightFlushHand() Hand {
 	return Hand{
 		Cards:  StraightFlushCards(),
-		Type:   StraightFlushName,
-		Value:  StraightFlushRank,
+		Type:   StraightFlush,
 		Used:   StraightFlushCards(),
 		Unused: []Card{},
 	}
@@ -602,8 +577,7 @@ func StraightFlushHand() Hand {
 func HighStraightFlushHand() Hand {
 	return Hand{
 		Cards:  StraightFlushHighCards(),
-		Type:   StraightFlushName,
-		Value:  StraightFlushRank,
+		Type:   StraightFlush,
 		Used:   StraightFlushHighCards(),
 		Unused: []Card{},
 	}
@@ -634,8 +608,7 @@ func StraightFlushHighCards() []Card {
 func RoyalFlushHand() Hand {
 	return Hand{
 		Cards:  RoyalFlushCards(),
-		Type:   RoyalFlushName,
-		Value:  RoyalFlushRank,
+		Type:   RoyalFlush,
 		Used:   RoyalFlushCards(),
 		Unused: []Card{},
 	}
@@ -655,54 +628,49 @@ func RoyalFlushCards() []Card {
 func TestHand_Evaluate(t *testing.T) {
 	type fields struct {
 		Cards []Card
-		Type  string
-		Value HandRank
+		Type  HandType
 	}
 	tests := []struct {
 		name   string
 		fields fields
 	}{
-		{name: "High Card", fields: fields{Cards: HighCardCards(), Type: "High Card", Value: HighCardRank}},
-		{name: "High Card", fields: fields{Cards: HighCardLower1Cards(), Type: "High Card", Value: HighCardRank}},
-		{name: "High Card", fields: fields{Cards: HighCardLower2Cards(), Type: "High Card", Value: HighCardRank}},
-		{name: "One Pair", fields: fields{Cards: OnePairCards(), Type: "One Pair", Value: OnePairRank}},
-		{name: "One Pair", fields: fields{Cards: OnePairHigh1Cards(), Type: "One Pair", Value: OnePairRank}},
-		{name: "One Pair", fields: fields{Cards: OnePairHigh2Cards(), Type: "One Pair", Value: OnePairRank}},
-		{name: "Two Pair", fields: fields{Cards: TwoPairCards(), Type: "Two Pair", Value: TwoPairsRank}},
-		{name: "Two Pair", fields: fields{Cards: TwoPairHigh1Cards(), Type: "Two Pair", Value: TwoPairsRank}},
-		{name: "Two Pair", fields: fields{Cards: TwoPairHigh2Cards(), Type: "Two Pair", Value: TwoPairsRank}},
-		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindCards(), Type: "Three of a Kind", Value: ThreeOfAKindRank}},
-		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHigh1Cards(), Type: "Three of a Kind", Value: ThreeOfAKindRank}},
-		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHigh2Cards(), Type: "Three of a Kind", Value: ThreeOfAKindRank}},
-		{name: "Straight", fields: fields{Cards: StraightCards(), Type: "Straight", Value: StraightRank}},
-		{name: "Straight", fields: fields{Cards: StraightHighCards(), Type: "Straight", Value: StraightRank}},
-		{name: "Straight", fields: fields{Cards: AceLowStraightCards(), Type: "Straight", Value: StraightRank}},
-		{name: "Straight", fields: fields{Cards: AceHighStraightCards(), Type: "Straight", Value: StraightRank}},
-		{name: "Flush", fields: fields{Cards: FlushCards(), Type: "Flush", Value: FlushRank}},
-		{name: "Flush", fields: fields{Cards: FlushHighCards(), Type: "Flush", Value: FlushRank}},
-		{name: "Full House", fields: fields{Cards: FullHouseCards(), Type: "Full House", Value: FullHouseRank}},
-		{name: "Full House", fields: fields{Cards: FullHouseHigh1Cards(), Type: "Full House", Value: FullHouseRank}},
-		{name: "Full House", fields: fields{Cards: FullHouseHigh2Cards(), Type: "Full House", Value: FullHouseRank}},
-		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindCards(), Type: "Four of a Kind", Value: FourOfAKindRank}},
-		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHigh1Cards(), Type: "Four of a Kind", Value: FourOfAKindRank}},
-		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHigh2Cards(), Type: "Four of a Kind", Value: FourOfAKindRank}},
-		{name: "Straight Flush", fields: fields{Cards: StraightFlushCards(), Type: "Straight Flush", Value: StraightFlushRank}},
-		{name: "Straight Flush", fields: fields{Cards: StraightFlushHighCards(), Type: "Straight Flush", Value: StraightFlushRank}},
-		{name: "Royal Flush", fields: fields{Cards: RoyalFlushCards(), Type: "Royal Flush", Value: RoyalFlushRank}},
+		{name: "High Card", fields: fields{Cards: HighCardCards(), Type: HighCard}},
+		{name: "High Card", fields: fields{Cards: HighCardLower1Cards(), Type: HighCard}},
+		{name: "High Card", fields: fields{Cards: HighCardLower2Cards(), Type: HighCard}},
+		{name: "One Pair", fields: fields{Cards: OnePairCards(), Type: OnePair}},
+		{name: "One Pair", fields: fields{Cards: OnePairHigh1Cards(), Type: OnePair}},
+		{name: "One Pair", fields: fields{Cards: OnePairHigh2Cards(), Type: OnePair}},
+		{name: "Two Pair", fields: fields{Cards: TwoPairCards(), Type: TwoPairs}},
+		{name: "Two Pair", fields: fields{Cards: TwoPairHigh1Cards(), Type: TwoPairs}},
+		{name: "Two Pair", fields: fields{Cards: TwoPairHigh2Cards(), Type: TwoPairs}},
+		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindCards(), Type: ThreeOfAKind}},
+		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHigh1Cards(), Type: ThreeOfAKind}},
+		{name: "Three of a Kind", fields: fields{Cards: ThreeOfAKindHigh2Cards(), Type: ThreeOfAKind}},
+		{name: "Straight", fields: fields{Cards: StraightCards(), Type: Straight}},
+		{name: "Straight", fields: fields{Cards: StraightHighCards(), Type: Straight}},
+		{name: "Straight", fields: fields{Cards: AceLowStraightCards(), Type: Straight}},
+		{name: "Straight", fields: fields{Cards: AceHighStraightCards(), Type: Straight}},
+		{name: "Flush", fields: fields{Cards: FlushCards(), Type: Flush}},
+		{name: "Flush", fields: fields{Cards: FlushHighCards(), Type: Flush}},
+		{name: "Full House", fields: fields{Cards: FullHouseCards(), Type: FullHouse}},
+		{name: "Full House", fields: fields{Cards: FullHouseHigh1Cards(), Type: FullHouse}},
+		{name: "Full House", fields: fields{Cards: FullHouseHigh2Cards(), Type: FullHouse}},
+		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindCards(), Type: FourOfAKind}},
+		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHigh1Cards(), Type: FourOfAKind}},
+		{name: "Four of a Kind", fields: fields{Cards: FourOfAKindHigh2Cards(), Type: FourOfAKind}},
+		{name: "Straight Flush", fields: fields{Cards: StraightFlushCards(), Type: StraightFlush}},
+		{name: "Straight Flush", fields: fields{Cards: StraightFlushHighCards(), Type: StraightFlush}},
+		{name: "Royal Flush", fields: fields{Cards: RoyalFlushCards(), Type: RoyalFlush}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			h := &Hand{
 				Cards: tt.fields.Cards,
 				Type:  tt.fields.Type,
-				Value: tt.fields.Value,
 			}
 			h.Evaluate()
 			if h.Type != tt.fields.Type {
-				t.Errorf("Expected hand type %s, but got %s", tt.fields.Type, h.Type)
-			}
-			if h.Value != tt.fields.Value {
-				t.Errorf("Expected hand value %d, but got %d", tt.fields.Value, h.Value)
+				t.Errorf("Expected hand type %s, but got %s", tt.fields.Type.Name, h.Type.Name)
 			}
 		})
 	}
@@ -1020,9 +988,6 @@ func Test_findWinners(t *testing.T) {
 					g, w := got[i], tt.want[i]
 					if g.Type != w.Type {
 						t.Errorf("Types - findWinners() = %v, want %v", &g, &w)
-					}
-					if g.Value != w.Value {
-						t.Errorf("Values - findWinners() = %v, want %v", &g, &w)
 					}
 					if !cardSlicesAreEqual(g.Cards, w.Cards) || !cardSlicesAreEqual(g.Used, w.Used) || !cardSlicesAreEqual(g.Unused, w.Unused) {
 						t.Errorf("Slices - findWinners() = %v, want %v", &g, &w)

@@ -18,45 +18,24 @@ func (c *Card) String() string {
 	return c.Rank.Initial + c.Suit.Symbol
 }
 
+type Cards []Card
+
+func (c Cards) Len() int {
+	return len(c)
+}
+
+func (c Cards) Less(i, j int) bool {
+	return c[i].Rank.Value < c[j].Rank.Value
+}
+
+func (c Cards) Swap(i, j int) {
+	c[i], c[j] = c[j], c[i]
+}
+
 type Rank struct {
 	Value   int
 	Name    string
 	Initial string
-}
-
-func GetRank(val int) Rank {
-	var rank Rank
-	switch val {
-	case LowAceValue:
-		rank = LowAceRank
-	case TwoValue:
-		rank = TwoRank
-	case ThreeValue:
-		rank = ThreeRank
-	case FourValue:
-		rank = FourRank
-	case FiveValue:
-		rank = FiveRank
-	case SixValue:
-		rank = SixRank
-	case SevenValue:
-		rank = SevenRank
-	case EightValue:
-		rank = EightRank
-	case NineValue:
-		rank = NineRank
-	case TenValue:
-		rank = TenRank
-	case JackValue:
-		rank = JackRank
-	case QueenValue:
-		rank = QueenRank
-	case KingValue:
-		rank = KingRank
-	case HighAceValue:
-		rank = HighAceRank
-	}
-	return rank
 }
 
 const (
@@ -94,6 +73,7 @@ var (
 )
 
 var Ranks = []Rank{
+	//Low Ace is a special case, not included here to facilitate easy deck creation
 	TwoRank,
 	ThreeRank,
 	FourRank,

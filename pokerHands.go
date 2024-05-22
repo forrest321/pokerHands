@@ -7,46 +7,32 @@ import (
 	"strings"
 )
 
-type HandRank int
-
-const (
-	HighCardRank HandRank = iota + 1
-	OnePairRank
-	TwoPairsRank
-	ThreeOfAKindRank
-	StraightRank
-	FlushRank
-	FullHouseRank
-	FourOfAKindRank
-	StraightFlushRank
-	RoyalFlushRank
-)
-
-const (
-	HighCardName      = "High Card"
-	OnePairName       = "One Pair"
-	TwoPairsName      = "Two Pair"
-	ThreeOfAKindName  = "Three of a Kind"
-	StraightName      = "Straight"
-	FlushName         = "Flush"
-	FullHouseName     = "Full House"
-	FourOfAKindName   = "Four of a Kind"
-	StraightFlushName = "Straight Flush"
-	RoyalFlushName    = "Royal Flush"
-)
-
 type Hand struct {
-	Cards  []Card
-	Type   string
-	Value  HandRank
-	Used   []Card
-	Unused []Card
+	Cards     Cards
+	Type      HandType
+	Used      Cards
+	Unused    Cards
+	evaluated bool
 }
+
+func (h *Hand) Len() int {
+	return len(h.Cards)
+}
+
+func (h *Hand) Swap(i, j int) {
+	h.Cards[i], h.Cards[j] = h.Cards[j], h.Cards[i]
+}
+
+func (h *Hand) Less(i, j int) bool {
+	return h.Cards[i].Rank.Value < h.Cards[j].Rank.Value
+}
+
+type Hands []Hand
 
 func (h *Hand) String() string {
 	var builder strings.Builder
 
-	builder.WriteString(h.Type + "\n")
+	builder.WriteString(h.Type.Name + "\n")
 	for i := range h.Cards {
 		if i > 0 {
 			builder.WriteString(", ")
@@ -56,6 +42,106 @@ func (h *Hand) String() string {
 	}
 
 	return builder.String()
+}
+
+func (h Hands) Len() int {
+	return len(h)
+}
+
+func (h Hands) Swap(i, j int) {
+	h[i], h[j] = h[j], h[i]
+}
+
+func (h Hands) Less(i, j int) bool {
+	if !h[i].evaluated {
+		h[i].Evaluate()
+	}
+	if !h[j].evaluated {
+		h[j].Evaluate()
+	}
+	if h[i].Type.Rank < h[j].Type.Rank {
+		return true
+	}
+	if h[i].Type.Rank > h[j].Type.Rank {
+		return false
+	}
+	iUsed, jUsed := getCardValues(h[i].Used), getCardValues(h[j].Used)
+	switch slices.Compare(iUsed, jUsed) {
+	case -1:
+		return true
+	case 0:
+		iUnused, jUnused := getCardValues(h[i].Unused), getCardValues(h[j].Unused)
+		switch slices.Compare(iUnused, jUnused) {
+		case -1:
+			return true
+		case 0:
+			return false
+		case 1:
+			return false
+		}
+	case 1:
+		return false
+	}
+	return false
+}
+
+func FindWinners(h Hands) Hands {
+	if h.Len() == 1 {
+		return Hands{h[0]}
+	}
+	sort.Sort(h)
+	var winners Hands
+	topHand := h[0]
+	if !topHand.evaluated {
+		topHand.Evaluate()
+	}
+	thUsedVals := getCardValues(topHand.Used)
+	for i, hh := range h {
+		if !hh.evaluated {
+			hh.Evaluate()
+		}
+		if hh.Type.Rank > topHand.Type.Rank {
+			winners = Hands{hh}
+			topHand = hh
+			thUsedVals = getCardValues(hh.Used)
+			continue
+		}
+		if hh.Type.Rank < topHand.Type.Rank {
+			continue
+		}
+		if i == 0 {
+			winners = Hands{topHand}
+		} else {
+			currentUsed := getCardValues(hh.Used)
+			switch slices.Compare(thUsedVals, currentUsed) {
+			case -1: //current hand wins
+				topHand = hh
+				thUsedVals = getCardValues(topHand.Used)
+				winners = Hands{topHand}
+				continue
+			case 0: //used cards are equal
+				// check unused
+				thUnusedVals := getCardValues(topHand.Unused)
+				cuUnusedVals := getCardValues(hh.Unused)
+				switch slices.Compare(thUnusedVals, cuUnusedVals) {
+				case -1: //current hand wins
+					topHand = hh
+					thUsedVals = getCardValues(topHand.Used)
+					winners = Hands{topHand}
+				case 0: //same
+					winners = append(winners, hh)
+				case 1: //topHand wins
+					//no change
+					continue
+				}
+				continue
+			case 1: //topHand is bigger, no changes
+				continue
+			}
+		}
+	}
+
+	return winners
 }
 
 func isOnePair(ranks map[Rank]int) (bool, Rank) {
@@ -178,6 +264,7 @@ func getCardValues(cards []Card) []int {
 	for i, card := range cards {
 		cardVals[i] = card.Rank.Value
 	}
+	sort.Ints(cardVals)
 	return cardVals
 }
 
@@ -199,28 +286,30 @@ func getRankings(cards []Card) (map[Rank][]Card, map[Rank]int, []int) {
 }
 
 func (h *Hand) Evaluate() {
+	if h.evaluated {
+		return
+	}
+	h.evaluated = true
 	cardsByRanks, ranks, vals := getRankings(h.Cards)
 	switch len(ranks) {
 	case 5:
 		flush := isFlush(h.Cards)
 		straight := isStraight(vals)
-		h.Used = h.Cards
 		switch {
 		case isRoyalFlush(vals, flush, straight):
-			h.Type = RoyalFlushName
-			h.Value = RoyalFlushRank
+			h.Used = h.Cards
+			h.Type = RoyalFlush
 		case flush && straight:
-			h.Type = StraightFlushName
-			h.Value = StraightFlushRank
+			h.Used = h.Cards
+			h.Type = StraightFlush
 		case flush:
-			h.Type = FlushName
-			h.Value = FlushRank
+			h.Used = h.Cards
+			h.Type = Flush
 		case straight:
-			h.Type = StraightName
-			h.Value = StraightRank
+			h.Used = h.Cards
+			h.Type = Straight
 		default:
-			h.Type = HighCardName
-			h.Value = HighCardRank
+			h.Type = HighCard
 			var highCard Card
 			for i, card := range h.Cards {
 				if i == 0 {
@@ -231,47 +320,47 @@ func (h *Hand) Evaluate() {
 					}
 				}
 			}
-			h.Used = getCardsByRank(h.Cards, highCard.Rank)
+			h.Used = []Card{highCard}
 			h.Unused = getCardsByOtherRanks(cardsByRanks, highCard.Rank)
+			sort.Sort(h.Unused)
 		}
 	case 4:
 		pair, rank := isOnePair(ranks)
 		if pair {
-			h.Type = OnePairName
-			h.Value = OnePairRank
+			h.Type = OnePair
 			h.Used = getCardsByRank(h.Cards, rank)
 			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
+			sort.Sort(h.Unused)
 		}
 
 	case 3:
 		three, rank := isThreeOfAKind(ranks)
 		if three {
-			h.Type = ThreeOfAKindName
-			h.Value = ThreeOfAKindRank
+			h.Type = ThreeOfAKind
 			h.Used = getCardsByRank(h.Cards, rank)
 			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
+			sort.Sort(h.Unused)
 		} else {
 			two, rnk1, rnk2 := isTwoPair(ranks)
 			if two {
-				h.Type = TwoPairsName
-				h.Value = TwoPairsRank
+				h.Type = TwoPairs
 				a := getCardsByRank(h.Cards, rnk1)
 				b := getCardsByRank(h.Cards, rnk2)
 				h.Used = append(a, b...)
+				sort.Sort(h.Used)
 				h.Unused = getCardsByOtherRanks(cardsByRanks, rnk1, rnk2)
+				sort.Sort(h.Unused)
 			}
 		}
 	case 2:
 		four, rank := isFourOfAKind(ranks)
 		if four {
-			h.Type = FourOfAKindName
-			h.Value = FourOfAKindRank
+			h.Type = FourOfAKind
 			h.Used = getCardsByRank(h.Cards, rank)
 			h.Unused = getCardsByOtherRanks(cardsByRanks, rank)
 		} else {
 			if isFullHouse(ranks) {
-				h.Type = FullHouseName
-				h.Value = FullHouseRank
+				h.Type = FullHouse
 				h.Used = h.Cards
 			}
 		}
@@ -296,63 +385,4 @@ func getCardsByRank(cards []Card, rank Rank) []Card {
 		}
 	}
 	return returnCards
-}
-
-func FindWinners(hands []Hand) []Hand {
-	var winners []Hand
-	highestRank := 0
-	for i, h := range hands {
-		h.Evaluate()
-		if i == 0 {
-			highestRank = int(h.Value)
-			winners = append(winners, h)
-		} else {
-			if int(h.Value) > highestRank {
-				highestRank = int(h.Value)
-				winners = []Hand{h}
-			} else if int(h.Value) == highestRank {
-				winners = append(winners, h)
-			}
-		}
-	}
-	if len(winners) == 1 {
-		return winners
-	}
-	var realWinners []Hand
-	var highUsed []int
-	var highKick []int
-	for i, winner := range winners {
-		if i == 0 {
-			realWinners = []Hand{winner}
-			highUsed = getCardValues(winner.Used)
-			highKick = getCardValues(winner.Unused)
-			sort.Ints(highKick)
-			sort.Ints(highUsed)
-		} else {
-			currentUsed := getCardValues(winner.Used)
-			sort.Ints(currentUsed)
-
-			switch slices.Compare(currentUsed, highUsed) {
-			case -1: //highUsed is bigger
-				continue
-			case 0: //equal
-				currentKickers := getCardValues(winner.Unused)
-				sort.Ints(currentKickers)
-				switch slices.Compare(currentKickers, highKick) {
-				case -1: //highKick is bigger
-					continue
-				case 0: //equal
-					realWinners = append(realWinners, winner)
-					highKick = currentKickers
-				case 1: //currentKickers is bigger
-					highKick = currentKickers
-					realWinners = []Hand{winner}
-				}
-			case 1: //currentUsed is bigger
-				highUsed = currentUsed
-				realWinners = []Hand{winner}
-			}
-		}
-	}
-	return realWinners
 }
