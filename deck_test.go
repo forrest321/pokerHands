@@ -14,6 +14,11 @@ func TestDeck_Deal(t *testing.T) {
 	if len(tu) != 4 {
 		t.Errorf("expected 4 turn cards, got %d", len(tu))
 	}
+	for _, ttu := range tu {
+		if ttu.Rank.Value == 0 {
+			t.Errorf("rank value should be non-zero, got %d", ttu.Rank.Value)
+		}
+	}
 }
 
 func TestDeck_DrawCard(t *testing.T) {
@@ -68,5 +73,10 @@ func TestNewDeck(t *testing.T) {
 	}
 	if d.Shuffled {
 		t.Errorf("NewDeck() should not be shuffled")
+	}
+	for _, card := range d.Cards {
+		if card.Rank.Value == 0 {
+			t.Errorf("rank value should be non-zero, got %d", card.Rank.Value)
+		}
 	}
 }
