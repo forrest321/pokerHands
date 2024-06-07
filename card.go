@@ -1,6 +1,8 @@
 package pokerHands
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type Card struct {
 	Rank Rank
@@ -13,6 +15,11 @@ func (c *Card) String() string {
 }
 
 type Cards []Card
+
+func (c *Cards) String() string {
+	h := Hand{Cards: *c}
+	return h.String()
+}
 
 func (c Cards) Len() int {
 	return len(c)
